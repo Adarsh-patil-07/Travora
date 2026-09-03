@@ -10,7 +10,7 @@ interface DestinationCardProps {
 }
 
 export default function DestinationCard({ destination }: DestinationCardProps) {
-  const { imageUrl } = useTravelImage(destination.imageQuery || `${destination.name} ${destination.country}`, destination.id);
+  const { imageUrl } = useTravelImage(destination.imageQuery || `${destination.name} ${destination.country}`, destination.id, undefined, 'small');
 
   // Static mock ratings based on destination ID hash
   const hash = destination.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);

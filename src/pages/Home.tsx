@@ -88,18 +88,18 @@ export default function Home() {
             whileInView="visible"
             viewport={{ once: true, margin: "-50px" }}
             variants={staggerContainer}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6"
+            className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6"
           >
             {features.map((feature, idx) => (
-              <motion.div key={idx} variants={fadeInUp} className="flex items-center gap-3 bg-white p-4 rounded-2xl border border-gray-100 shadow-2xs">
+              <motion.div key={idx} variants={fadeInUp} className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 bg-white p-3 sm:p-4 rounded-2xl border border-gray-100 shadow-2xs">
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${feature.bg}`}>
                   <div className="scale-75">
                     {feature.icon}
                   </div>
                 </div>
                 <div className="text-left">
-                  <h4 className="font-semibold text-text text-sm mb-0.5">{feature.title}</h4>
-                  <p className="text-[10px] text-muted leading-tight max-w-[140px]">{feature.subtitle}</p>
+                  <h4 className="font-semibold text-text text-xs sm:text-sm mb-0.5">{feature.title}</h4>
+                  <p className="text-[9px] sm:text-[10px] text-muted leading-tight max-w-[140px]">{feature.subtitle}</p>
                 </div>
               </motion.div>
             ))}

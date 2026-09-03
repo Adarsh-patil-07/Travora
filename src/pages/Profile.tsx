@@ -122,11 +122,11 @@ export default function Profile() {
 
       {/* Main Content Container */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-4 md:-mt-48 lg:-mt-56 relative z-10 pb-20">
-        <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="flex flex-col md:flex-row gap-4 md:gap-8 items-start">
+        <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="flex flex-col md:flex-row gap-8 items-start">
           
           {/* Left Column: User Card */}
           <div className="w-full md:w-1/3 lg:w-1/4 flex flex-col gap-4 md:gap-6 sticky top-24">
-            <motion.div variants={fadeInUp} className="relative overflow-hidden rounded-2xl md:rounded-3xl p-4 sm:p-5 md:p-6 bg-gradient-to-br from-white via-[#FCFBFE] to-[#F7F5FF] text-gray-900 border border-purple-100/90 shadow-[0_10px_30px_-10px_rgba(85,56,238,0.12),0_2px_8px_rgba(0,0,0,0.04)]">
+            <motion.div variants={fadeInUp} className="relative overflow-hidden rounded-2xl md:rounded-3xl px-4 pt-3 pb-5 sm:px-5 sm:pt-4 sm:pb-6 md:px-6 md:pt-4 md:pb-8 bg-gradient-to-br from-white via-[#FCFBFE] to-[#F7F5FF] text-gray-900 border border-purple-100/90 shadow-[0_10px_30px_-10px_rgba(85,56,238,0.12),0_2px_8px_rgba(0,0,0,0.04)]">
               {/* Subtle Ambient Light Shimmer */}
               <div className="absolute -top-10 -right-10 w-32 h-32 bg-purple-200/30 rounded-full blur-2xl pointer-events-none" />
               <div className="absolute -bottom-10 -left-10 w-28 h-28 bg-pink-100/40 rounded-full blur-2xl pointer-events-none" />
