@@ -6,7 +6,7 @@ import {
   Calendar, Users, Maximize, Map as MapIcon, ChevronRight,
   CheckCircle2, Lightbulb, Sparkles, Navigation
 } from 'lucide-react';
-import { destinations, destinationImages } from '../data/destinations';
+import { destinations } from '../data/destinations';
 import Button from '../components/ui/Button';
 import ErrorFallback from '../components/ui/ErrorFallback';
 import ItineraryTimeline from '../components/features/ItineraryTimeline';
@@ -15,6 +15,8 @@ import { pageTransition } from '../lib/motion';
 import type { Place } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import { saveDestinationToDb, removeDestinationFromDb } from '../lib/db';
+import { useTravelImage } from '../hooks/useTravelImage';
+import { useWeather } from '../hooks/useWeather';
 import toast from 'react-hot-toast';
 
 // Helper to get a flag emoji based on country name
@@ -23,7 +25,7 @@ const getFlagEmoji = (country: string) => {
     'Japan': '🇯🇵', 'France': '🇫🇷', 'Indonesia': '🇮🇩', 'South Africa': '🇿🇦',
     'United States': '🇺🇸', 'Australia': '🇦🇺', 'Switzerland': '🇨🇭', 'UAE': '🇦🇪',
     'United Kingdom': '🇬🇧', 'Italy': '🇮🇹', 'Spain': '🇪🇸', 'Turkey': '🇹🇷',
-    'Canada': '🇨🇦', 'New Zealand': '🇳🇿', 'Singapore': '🇸🇬'
+    'Canada': '🇨🇦', 'New Zealand': '🇳🇿', 'Singapore': '🇸🇬', 'India': '🇮🇳'
   };
   return flags[country] || '🌍';
 };
@@ -31,27 +33,7 @@ const getFlagEmoji = (country: string) => {
 // Local component for the mockup-style place cards
 function MockupPlaceCard({ place }: { place: Place }) {
   const [isSaved, setIsSaved] = useState(false);
-  
-  const fallbackImages = [
-    'https://images.unsplash.com/photo-1552832230-c0197dd311b5?q=80&w=800&auto=format&fit=crop', // Rome
-    'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=800&auto=format&fit=crop', // Kyoto Temple
-    'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?q=80&w=800&auto=format&fit=crop', // Paris Louvre
-    'https://images.unsplash.com/photo-1518684079-3c830dcef090?q=80&w=800&auto=format&fit=crop', // Istanbul
-    'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?q=80&w=800&auto=format&fit=crop', // Queenstown
-    'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=800&auto=format&fit=crop', // Central Park
-    'https://images.unsplash.com/photo-1533929736458-a5694d084b6e?q=80&w=800&auto=format&fit=crop', // Market
-    'https://images.unsplash.com/photo-1506929562872-bb421503ef21?q=80&w=800&auto=format&fit=crop', // Beach
-    'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=800&auto=format&fit=crop', // Adventure
-    'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=800&auto=format&fit=crop', // Tokyo
-    'https://images.unsplash.com/photo-1537996194471-e657df975ab4?q=80&w=800&auto=format&fit=crop', // Bali
-    'https://images.unsplash.com/photo-1580060839134-75a5edca2e99?q=80&w=800&auto=format&fit=crop', // Cape Town
-    'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?q=80&w=800&auto=format&fit=crop', // Sydney
-    'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=800&auto=format&fit=crop', // Dubai
-    'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?q=80&w=800&auto=format&fit=crop'  // London
-  ];
-  
-  const hash = place.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  const imageUrl = place.imageUrl || fallbackImages[hash % fallbackImages.length];
+  const { imageUrl } = useTravelImage(place.imageQuery || place.name, place.id);
   
   return (
     <div className="w-full h-full flex flex-col bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm group hover:shadow-md transition-all">
@@ -116,7 +98,8 @@ export default function Destination() {
     }
   };
 
-  const bgImageUrl = destinationImages[dest.id] || `https://image.pollinations.ai/prompt/${encodeURIComponent(dest.imageQuery)}?width=2560&height=1440&nologo=true`;
+  const { imageUrl: bgImageUrl } = useTravelImage(dest.imageQuery || `${dest.name} ${dest.country}`, dest.id);
+  const { weather } = useWeather(dest.coordinates.lat, dest.coordinates.lng);
   const cherryBlossomUrl = bgImageUrl;
 
   return (
@@ -216,35 +199,33 @@ export default function Destination() {
                 <div className="flex items-center gap-2 mb-6 text-white/80 text-sm font-medium">
                   <MapPin size={16} />
                   <span>Current weather in {dest.name}</span>
+                  <span className="ml-auto w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                 </div>
                 
                 <div className="flex items-center gap-4 mb-8">
-                  <div className="text-accent text-5xl">☀️</div>
+                  <div className="text-5xl select-none">{weather?.icon || '☀️'}</div>
                   <div>
-                    <div className="text-5xl font-light tracking-tighter">26<span className="text-3xl align-top">°C</span></div>
-                    <div className="text-sm font-medium">Sunny</div>
-                    <div className="text-xs text-white/70">Feels like 28°</div>
+                    <div className="text-5xl font-light tracking-tighter">
+                      {weather?.temp ?? 26}<span className="text-3xl align-top">°C</span>
+                    </div>
+                    <div className="text-sm font-medium">{weather?.condition || 'Sunny'}</div>
+                    <div className="text-xs text-white/70">Feels like {weather?.feelsLike ?? 28}°</div>
                   </div>
                 </div>
                 
                 <div className="grid grid-cols-3 gap-4 border-t border-white/20 pt-4 pb-4 text-xs">
                   <div>
                     <div className="text-white/70 mb-1">Humidity</div>
-                    <div className="font-medium">52%</div>
+                    <div className="font-medium">{weather?.humidity ?? 52}%</div>
                   </div>
                   <div>
                     <div className="text-white/70 mb-1">Wind</div>
-                    <div className="font-medium">12 km/h</div>
+                    <div className="font-medium">{weather?.windSpeed ?? 12} km/h</div>
                   </div>
                   <div>
                     <div className="text-white/70 mb-1">Visibility</div>
-                    <div className="font-medium">10 km</div>
+                    <div className="font-medium">{weather?.visibility ?? 10} km</div>
                   </div>
-                </div>
-
-                <div className="border-t border-white/20 pt-4 flex justify-between items-center text-xs font-medium text-white/90 cursor-pointer hover:text-white group">
-                  <span>View full forecast</span>
-                  <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
             </div>

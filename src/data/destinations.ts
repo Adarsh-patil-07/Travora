@@ -165,23 +165,27 @@ export const destinations: Destination[] = [
       { id: 'marina-bay', name: 'Marina Bay Sands', description: 'An integrated resort fronting Marina Bay.', imageQuery: 'marina bay sands', category: 'Landmark' },
       { id: 'botanic', name: 'Singapore Botanic Gardens', description: 'A 163-year-old tropical garden located at the fringe of the orchard road shopping district.', imageQuery: 'singapore botanic gardens', category: 'Park' }
     ]
+  },
+  {
+    id: 'jaipur', name: 'Jaipur', country: 'India', continent: 'Asia',
+    coordinates: { lat: 26.9124, lng: 75.7873 },
+    description: "The vibrant 'Pink City' of Rajasthan, celebrated for its majestic palaces, ancient hill forts, and royal heritage.",
+    imageQuery: 'jaipur hawa mahal rajasthan', tags: ['culture', 'city', 'food'], bestTimeToVisit: 'October to March (Winter)',
+    famousPlaces: [
+      { id: 'hawa-mahal', name: 'Hawa Mahal', description: 'The iconic Palace of Winds with 953 intricately carved windows.', imageQuery: 'hawa mahal jaipur', category: 'Landmark' },
+      { id: 'amer-fort', name: 'Amer Fort', description: 'A magnificent hilltop fort overlooking Maota Lake.', imageQuery: 'amer fort jaipur', category: 'Landmark' },
+      { id: 'city-palace', name: 'City Palace', description: 'A stunning complex of courtyards, gardens, and royal Rajasthani buildings.', imageQuery: 'city palace jaipur', category: 'Landmark' }
+    ]
+  },
+  {
+    id: 'goa', name: 'Goa', country: 'India', continent: 'Asia',
+    coordinates: { lat: 15.2993, lng: 74.1240 },
+    description: "India's coastal paradise famous for sun-kissed Arabian Sea beaches, Portuguese heritage, and vibrant nightlife.",
+    imageQuery: 'goa beach sunset palms', tags: ['beach', 'nature', 'adventure'], bestTimeToVisit: 'November to February',
+    famousPlaces: [
+      { id: 'palolem', name: 'Palolem Beach', description: 'A scenic crescent beach lined with swaying coconut palms.', imageQuery: 'palolem beach goa', category: 'Beach' },
+      { id: 'aguada', name: 'Fort Aguada', description: 'A 17th-century Portuguese fort and lighthouse overlooking the ocean.', imageQuery: 'fort aguada goa', category: 'Landmark' },
+      { id: 'dudhsagar', name: 'Dudhsagar Falls', description: 'A majestic four-tiered waterfall cascading through lush western ghats.', imageQuery: 'dudhsagar waterfall', category: 'Nature' }
+    ]
   }
 ];
-
-export const destinationImages: Record<string, string> = {
-  'tokyo': 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=2560&auto=format&fit=crop',
-  'paris': 'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?q=80&w=2560&auto=format&fit=crop',
-  'bali': 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?q=80&w=2560&auto=format&fit=crop',
-  'cape-town': 'https://images.unsplash.com/photo-1580060839134-75a5edca2e99?q=80&w=2560&auto=format&fit=crop',
-  'new-york': 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=2560&auto=format&fit=crop',
-  'sydney': 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?q=80&w=2560&auto=format&fit=crop',
-  'kyoto': 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=2560&auto=format&fit=crop',
-  'dubai': 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=2560&auto=format&fit=crop',
-  'london': 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?q=80&w=2560&auto=format&fit=crop',
-  'rome': 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?q=80&w=2560&auto=format&fit=crop',
-  'barcelona': 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?q=80&w=2560&auto=format&fit=crop',
-  'istanbul': 'https://images.unsplash.com/photo-1518684079-3c830dcef090?q=80&w=2560&auto=format&fit=crop',
-  'vancouver': 'https://images.unsplash.com/photo-1559511260-66a654ae982a?q=80&w=2560&auto=format&fit=crop',
-  'queenstown': 'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?q=80&w=2560&auto=format&fit=crop',
-  'singapore': 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?q=80&w=2560&auto=format&fit=crop',
-};

@@ -8,7 +8,8 @@ import { pageTransition, fadeInUp } from '../lib/motion';
 import { generateItinerary } from '../services/ai';
 import { useAuth } from '../contexts/AuthContext';
 import { saveTripToDb } from '../lib/db';
-import { destinations, destinationImages } from '../data/destinations';
+import { destinations } from '../data/destinations';
+import { getTravelImageSync } from '../services/images';
 import type { SavedTrip } from '../lib/db';
 import toast from 'react-hot-toast';
 import type { Itinerary } from '../types';
@@ -28,28 +29,20 @@ const getTagForActivity = (title: string, desc: string) => {
 };
 
 const getDestinationImage = (destinationName?: string): string => {
-  if (!destinationName) return destinationImages['bali'];
+  if (!destinationName) return getTravelImageSync('bali');
   const nameLower = destinationName.toLowerCase();
 
-  // 1. Direct match with curated destinations catalogue
+  // 1. Match destination name/id
   const matched = destinations.find(d => 
     nameLower.includes(d.name.toLowerCase()) || 
     nameLower.includes(d.id.toLowerCase()) ||
     d.name.toLowerCase().includes(nameLower)
   );
-  if (matched && destinationImages[matched.id]) {
-    return destinationImages[matched.id];
+  if (matched) {
+    return getTravelImageSync(matched.id);
   }
 
-  // 2. Direct key lookup (e.g. 'bali', 'paris', 'tokyo', etc.)
-  for (const [key, img] of Object.entries(destinationImages)) {
-    if (nameLower.includes(key) || key.includes(nameLower)) {
-      return img;
-    }
-  }
-
-  // 3. Fallback to destination photo
-  return `https://image.pollinations.ai/prompt/${encodeURIComponent(destinationName + ' landmark landscape photography 4k')}?width=1200&height=600&nologo=true`;
+  return getTravelImageSync(destinationName);
 };
 
 const getActivityImage = (title: string, desc: string, index: number) => {

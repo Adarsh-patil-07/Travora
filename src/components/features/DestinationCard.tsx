@@ -3,22 +3,17 @@ import { motion } from 'framer-motion';
 import { Star, MapPin, ArrowUpRight } from 'lucide-react';
 import type { Destination } from '../../types';
 import { cardHover } from '../../lib/motion';
-import { destinationImages } from '../../data/destinations';
+import { useTravelImage } from '../../hooks/useTravelImage';
 
 interface DestinationCardProps {
   destination: Destination;
 }
 
 export default function DestinationCard({ destination }: DestinationCardProps) {
-  const fallbackList = [
-    'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=800&auto=format&fit=crop',
-    'https://images.unsplash.com/photo-1506929562872-bb421503ef21?q=80&w=800&auto=format&fit=crop',
-    'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=800&auto=format&fit=crop'
-  ];
-  const hash = destination.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  const imageUrl = destinationImages[destination.id] || fallbackList[hash % fallbackList.length];
+  const { imageUrl } = useTravelImage(destination.imageQuery || `${destination.name} ${destination.country}`, destination.id);
 
   // Static mock ratings based on destination ID hash
+  const hash = destination.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   const rating = (4.6 + (hash % 4) * 0.1).toFixed(1);
 
   return (

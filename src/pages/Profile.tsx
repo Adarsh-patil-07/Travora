@@ -5,7 +5,8 @@ import {
   User, Settings, LogOut, MapPin, Heart, Globe, ChevronDown, Trash2, ArrowRight, Sparkles, Calendar, Compass
 } from 'lucide-react';
 import { pageTransition, fadeInUp, staggerContainer } from '../lib/motion';
-import { destinations, destinationImages } from '../data/destinations';
+import { destinations } from '../data/destinations';
+import { getTravelImageSync } from '../services/images';
 import { useAuth } from '../contexts/AuthContext';
 import { removeDestinationFromDb, removeTripFromDb } from '../lib/db';
 import toast from 'react-hot-toast';
@@ -238,7 +239,7 @@ export default function Profile() {
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4">
                     {savedDestinationsList.map(dest => {
-                      const imgUrl = destinationImages[dest.id] || `https://image.pollinations.ai/prompt/${encodeURIComponent(dest.imageQuery)}?width=800&height=500&nologo=true`;
+                      const imgUrl = getTravelImageSync(dest.id);
                       return (
                         <Link 
                           key={dest.id}

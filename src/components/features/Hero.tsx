@@ -1,17 +1,23 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MapPin, Search, CloudSun, LocateFixed, Loader2, Palmtree, RadioTower, Mountain, Building2 } from 'lucide-react';
+import { MapPin, Search, LocateFixed, Loader2, Palmtree, RadioTower, Mountain, Building2 } from 'lucide-react';
 import { fadeInUp, staggerContainer } from '../../lib/motion';
+import { useWeather } from '../../hooks/useWeather';
 
 import heroVideoPath from '../../assets/Hero-video.mp4';
+import heroImagePath from '../../assets/Hero-Image.png';
 
 export default function Hero() {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentLocation, setCurrentLocation] = useState('Bengaluru, India');
+  const [coords, setCoords] = useState({ lat: 12.9716, lng: 77.5946 });
   const [isLocating, setIsLocating] = useState(false);
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const navigate = useNavigate();
+
+  const { weather } = useWeather(coords.lat, coords.lng);
 
   const locateUser = useCallback(() => {
     if (isLocating) return;
@@ -26,6 +32,7 @@ export default function Hero() {
       async (position) => {
         try {
           const { latitude, longitude } = position.coords;
+          setCoords({ lat: latitude, lng: longitude });
           // Reverse geocoding using OpenStreetMap Nominatim (Free, no API key required)
           const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10`);
           const data = await res.json();
@@ -70,16 +77,30 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-[92vh] lg:min-h-screen w-full flex flex-col justify-center pt-24 lg:pt-32 pb-16 overflow-hidden bg-[#111111]">
-      {/* Background Video */}
+      {/* Background Media */}
       <div className="absolute inset-0 bg-[#0d1821]">
         
-        {/* Lazily load the heavy local video file */}
+        {/* Instant Poster Image for 0.1s visual render (fades out when video plays) */}
+        <img
+          src={heroImagePath}
+          alt="Hero background"
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+            isVideoPlaying ? 'opacity-0 pointer-events-none' : 'opacity-[0.65]'
+          }`}
+          fetchPriority="high"
+        />
+
+        {/* Lazily load the local video with instant poster image */}
         {videoSrc && (
           <video
             autoPlay
             loop
             muted
             playsInline
+            preload="auto"
+            poster={heroImagePath}
+            onPlaying={() => setIsVideoPlaying(true)}
+            onLoadedData={() => setIsVideoPlaying(true)}
             className="absolute inset-0 w-full h-full object-cover opacity-[0.6] transition-opacity duration-1000"
           >
             <source src={videoSrc} type="video/mp4" />
@@ -195,26 +216,28 @@ export default function Hero() {
               </div>
               
               <div className="flex items-center gap-3.5 mb-5">
-                <CloudSun size={38} className="text-accent drop-shadow-md" />
+                <span className="text-4xl drop-shadow-md select-none">{weather?.icon || '☀️'}</span>
                 <div>
-                  <div className="text-4xl font-light tracking-tighter drop-shadow-sm">16<span className="text-2xl align-top text-white/90">°C</span></div>
-                  <div className="text-xs font-medium text-white/90">Sunny</div>
-                  <div className="text-[10px] text-white/60 tracking-wide">Feels like 15°</div>
+                  <div className="text-4xl font-light tracking-tighter drop-shadow-sm">
+                    {weather?.temp ?? 24}<span className="text-2xl align-top text-white/90">°C</span>
+                  </div>
+                  <div className="text-xs font-medium text-white/90">{weather?.condition || 'Sunny'}</div>
+                  <div className="text-[10px] text-white/60 tracking-wide">Feels like {weather?.feelsLike ?? 25}°</div>
                 </div>
               </div>
               
               <div className="grid grid-cols-3 gap-2 border-t border-white/20 pt-3 text-xs">
                 <div>
                   <div className="text-white/60 mb-0.5 tracking-wider uppercase text-[8px] font-bold">Humidity</div>
-                  <div className="font-semibold text-xs text-white/95">52%</div>
+                  <div className="font-semibold text-xs text-white/95">{weather?.humidity ?? 52}%</div>
                 </div>
                 <div>
                   <div className="text-white/60 mb-0.5 tracking-wider uppercase text-[8px] font-bold">Wind</div>
-                  <div className="font-semibold text-xs text-white/95">12 km/h</div>
+                  <div className="font-semibold text-xs text-white/95">{weather?.windSpeed ?? 12} km/h</div>
                 </div>
                 <div>
                   <div className="text-white/60 mb-0.5 tracking-wider uppercase text-[8px] font-bold">Visibility</div>
-                  <div className="font-semibold text-xs text-white/95">10 km</div>
+                  <div className="font-semibold text-xs text-white/95">{weather?.visibility ?? 10} km</div>
                 </div>
               </div>
             </motion.div>
