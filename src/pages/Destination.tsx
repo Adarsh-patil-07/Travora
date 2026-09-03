@@ -143,7 +143,7 @@ export default function Destination() {
       initial="initial"
       animate="animate"
       exit="exit"
-      className="min-h-screen bg-[#F8F9FA] pb-24 font-sans"
+      className="min-h-screen bg-[#FAFAF7] pb-24 font-sans"
     >
       {/* 1. HERO SECTION */}
       <section className="relative min-h-[60vh] md:min-h-[85vh] lg:h-[85vh] w-full bg-[#111111] overflow-hidden flex flex-col">

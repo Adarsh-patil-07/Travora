@@ -1,35 +1,31 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, MapPin, Sparkles, ChevronDown } from 'lucide-react';
-import { destinations } from '../data/destinations';
+import { Search, MapPin, Sparkles, ChevronDown, Check } from 'lucide-react';
 import DestinationCard from '../components/features/DestinationCard';
 import EmptyState from '../components/ui/EmptyState';
-import { pageTransition, staggerContainer, fadeInUp } from '../lib/motion';
+import { destinations } from '../data/destinations';
 import type { Continent, MoodTag } from '../types';
+import { pageTransition, staggerContainer, fadeInUp } from '../lib/motion';
 
 const CONTINENTS: Continent[] = ['Asia', 'Europe', 'Americas', 'Africa', 'Oceania'];
 const MOODS: MoodTag[] = ['adventure', 'beach', 'culture', 'nature', 'food', 'city'];
 
-function CustomSelect({
-  value,
-  options,
-  onChange,
-  icon: Icon,
-  placeholder
-}: {
+interface CustomSelectProps {
   value: string;
+  onChange: (value: string) => void;
   options: { label: string; value: string }[];
-  onChange: (val: string) => void;
-  icon: any;
+  icon: React.ComponentType<{ className?: string; size?: number }>;
   placeholder: string;
-}) {
+}
+
+function CustomSelect({ value, onChange, options, icon: Icon, placeholder }: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
@@ -37,46 +33,47 @@ function CustomSelect({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const selectedOption = options.find(o => o.value === value) || { label: placeholder, value: 'All' };
+  const selectedOption = options.find(o => o.value === value);
 
   return (
-    <div className="relative w-full sm:w-48" ref={containerRef}>
+    <div className="relative min-w-[130px] sm:min-w-[160px] md:min-w-[180px]" ref={ref}>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center justify-between pl-3 md:pl-4 pr-3 md:pr-4 py-2.5 md:py-4 bg-primary rounded-xl md:rounded-2xl border-none focus:ring-2 focus:ring-accent outline-none text-text transition-shadow text-xs md:text-base ${isOpen ? 'ring-2 ring-accent' : ''}`}
+        className="w-full flex items-center justify-between gap-1.5 md:gap-3 px-3 md:px-4 py-2.5 md:py-3.5 bg-[#FAFAF7] hover:bg-[#EFECE6] rounded-xl md:rounded-2xl border border-transparent transition-all text-xs md:text-sm font-semibold text-[#111111] cursor-pointer shadow-2xs"
       >
-        <div className="flex items-center gap-2">
-          <Icon className="h-3.5 w-3.5 md:h-4 md:w-4 text-muted shrink-0" />
-          <span className="capitalize font-medium truncate">{selectedOption.label}</span>
+        <div className="flex items-center gap-1.5 md:gap-2 truncate">
+          <Icon className="text-gray-400 shrink-0 w-3.5 h-3.5 md:w-4 md:h-4" />
+          <span className="truncate">{selectedOption?.label || placeholder}</span>
         </div>
-        <ChevronDown size={12} className={`text-muted transition-transform duration-200 shrink-0 ml-1 md:ml-0 ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown size={14} className={`text-gray-400 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            transition={{ duration: 0.2 }}
-            className="absolute left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-[#E5E3DD] overflow-hidden py-2 z-50 max-h-[300px] overflow-y-auto"
+            initial={{ opacity: 0, y: -6, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -6, scale: 0.98 }}
+            transition={{ duration: 0.15 }}
+            className="absolute z-50 left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden py-1.5 max-h-60 overflow-y-auto no-scrollbar"
           >
-            {options.map((opt) => (
+            {options.map((option) => (
               <button
-                key={opt.value}
+                key={option.value}
                 type="button"
                 onClick={() => {
-                  onChange(opt.value);
+                  onChange(option.value);
                   setIsOpen(false);
                 }}
-                className={`w-full text-left px-4 py-2.5 transition-colors flex items-center capitalize ${
-                  value === opt.value
-                    ? 'bg-accent/10 text-accent font-semibold'
-                    : 'text-gray-700 hover:bg-gray-50 text-sm font-medium'
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 text-xs md:text-sm text-left transition-colors cursor-pointer ${
+                  value === option.value
+                    ? 'bg-purple-50 text-[#5538EE] font-bold'
+                    : 'text-gray-700 hover:bg-gray-50 font-medium'
                 }`}
               >
-                {opt.label}
+                <span className="capitalize">{option.label}</span>
+                {value === option.value && <Check size={14} className="text-[#5538EE] shrink-0" />}
               </button>
             ))}
           </motion.div>
@@ -88,15 +85,15 @@ function CustomSelect({
 
 export default function Explore() {
   const [searchParams, setSearchParams] = useSearchParams();
-  
-  // State from URL or defaults
-  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
-  const [selectedContinent, setSelectedContinent] = useState<Continent | 'All'>(
-    (searchParams.get('continent') as Continent) || 'All'
-  );
-  const [selectedMood, setSelectedMood] = useState<MoodTag | 'All'>(
-    (searchParams.get('tag') as MoodTag) || 'All'
-  );
+
+  // Initialize state from URL params
+  const initialQuery = searchParams.get('q') || '';
+  const initialContinent = (searchParams.get('continent') as Continent) || 'All';
+  const initialMood = (searchParams.get('tag') as MoodTag) || 'All';
+
+  const [searchQuery, setSearchQuery] = useState(initialQuery);
+  const [selectedContinent, setSelectedContinent] = useState<Continent | 'All'>(initialContinent);
+  const [selectedMood, setSelectedMood] = useState<MoodTag | 'All'>(initialMood);
 
   // Sync state to URL
   useEffect(() => {
@@ -126,38 +123,38 @@ export default function Explore() {
       initial="initial"
       animate="animate"
       exit="exit"
-      className="min-h-screen bg-primary pt-16 md:pt-28 pb-20"
+      className="min-h-screen bg-[#FAFAF7] pt-20 md:pt-28 pb-24"
     >
-      <div className="mx-auto max-w-[1920px] px-4 sm:px-6 lg:px-12 xl:px-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         
         {/* Page Header */}
-        <div className="mb-6 md:mb-12 mt-2 md:mt-4">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-text mb-4">
+        <div className="mb-6 md:mb-10">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-gray-900 mb-2 md:mb-3">
             Explore the world.
           </h1>
-          <p className="text-muted text-base md:text-lg max-w-2xl">
-            Find your next adventure by searching destinations, filtering by region, or discovering places that match your current mood.
+          <p className="text-gray-500 text-xs sm:text-sm md:text-base max-w-2xl leading-relaxed">
+            Find your next adventure by searching destinations, filtering by region, or discovering places that match your travel vibe.
           </p>
         </div>
 
         {/* Filters Section */}
-        <div className="bg-surface p-3 md:p-6 rounded-2xl md:rounded-3xl shadow-sm border border-border mb-6 md:mb-12 flex flex-col md:flex-row gap-2.5 md:gap-6">
+        <div className="bg-white p-3 md:p-5 rounded-2xl md:rounded-3xl shadow-sm border border-gray-200/70 mb-8 md:mb-10 flex flex-col md:flex-row gap-2.5 md:gap-4 items-stretch">
           
           {/* Search Bar */}
           <div className="flex-1 relative">
-            <div className="absolute inset-y-0 left-3 md:left-4 flex items-center pointer-events-none">
-              <Search className="h-4 w-4 md:h-5 md:w-5 text-muted" />
+            <div className="absolute inset-y-0 left-3.5 md:left-4 flex items-center pointer-events-none">
+              <Search className="h-4 w-4 md:h-5 md:w-5 text-gray-400" />
             </div>
             <input
               type="text"
               placeholder="Search destinations or countries..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 md:pl-12 pr-4 py-2.5 md:py-4 bg-primary rounded-xl md:rounded-2xl border-none focus:ring-2 focus:ring-accent outline-none text-text transition-shadow text-sm md:text-base"
+              className="w-full pl-10 md:pl-12 pr-4 py-2.5 md:py-3 bg-[#FAFAF7] rounded-xl md:rounded-2xl border-none focus:bg-white focus:ring-2 focus:ring-[#5538EE]/30 outline-none text-gray-900 placeholder:text-gray-400 transition-all text-xs md:text-sm font-medium"
             />
           </div>
 
-          <div className="flex flex-row gap-2 md:gap-4">
+          <div className="flex flex-row gap-2 md:gap-3">
             {/* Continent Filter */}
             <CustomSelect
               value={selectedContinent}
@@ -184,20 +181,20 @@ export default function Explore() {
           </div>
         </div>
 
-        {/* Results Count */}
-        <div className="mb-6 md:mb-8">
-          <p className="text-xs md:text-sm font-semibold text-muted uppercase tracking-wider">
+        {/* Results Count Header */}
+        <div className="mb-5 md:mb-7 flex items-center justify-between">
+          <p className="text-xs md:text-sm font-bold text-gray-400 uppercase tracking-widest">
             {filteredDestinations.length} {filteredDestinations.length === 1 ? 'Destination' : 'Destinations'} Found
           </p>
         </div>
 
-        {/* Results Grid */}
+        {/* Results Grid - Exactly 4 in each row on Desktop with proper spacing */}
         {filteredDestinations.length > 0 ? (
           <motion.div
             variants={staggerContainer}
             initial="hidden"
             animate="visible"
-            className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6"
           >
             <AnimatePresence mode="popLayout">
               {filteredDestinations.map((dest) => (
@@ -209,7 +206,7 @@ export default function Explore() {
                   animate="visible"
                   exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
                   transition={{ duration: 0.3 }}
-                  className="h-56 md:h-72"
+                  className="h-72 sm:h-80 md:h-[340px]"
                 >
                   <DestinationCard destination={dest} />
                 </motion.div>
@@ -220,7 +217,7 @@ export default function Explore() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="py-12"
+            className="py-16 text-center"
           >
             <EmptyState 
               title="No destinations found"
@@ -233,7 +230,7 @@ export default function Explore() {
                   setSelectedContinent('All');
                   setSelectedMood('All');
                 }}
-                className="text-accent hover:text-accent-hover font-medium underline underline-offset-4 transition-colors"
+                className="bg-gray-900 text-white text-xs font-semibold px-5 py-2.5 rounded-full hover:bg-gray-800 transition-colors shadow-sm cursor-pointer"
               >
                 Clear all filters
               </button>

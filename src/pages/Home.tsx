@@ -42,13 +42,13 @@ export default function Home() {
       initial="initial"
       animate="animate"
       exit="exit"
-      className="min-h-screen flex flex-col bg-surface overflow-x-hidden"
+      className="min-h-screen flex flex-col bg-[#FAFAF7] overflow-x-hidden"
     >
       <div className="h-[100dvh] flex-shrink-0 w-full relative">
         <Hero />
       </div>
 
-      <div className="flex-1 flex flex-col justify-center gap-16 lg:gap-24 mx-auto max-w-[1920px] px-4 sm:px-6 lg:px-12 xl:px-16 w-full py-16 lg:py-24">
+      <div className="flex-1 flex flex-col justify-center gap-16 lg:gap-24 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full py-16 lg:py-24">
         
         {/* Trending Destinations Section */}
         <section>
@@ -71,9 +71,9 @@ export default function Home() {
               </div>
             </motion.div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 xl:gap-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-7">
               {trendingDestinations.slice(0, 12).map((dest) => (
-                <motion.div key={dest.id} variants={fadeInUp} className="h-[280px] lg:h-[340px] xl:h-[380px]">
+                <motion.div key={dest.id} variants={fadeInUp} className="h-[280px] lg:h-[340px] xl:h-[360px]">
                   <DestinationCard destination={dest} />
                 </motion.div>
               ))}
@@ -91,7 +91,7 @@ export default function Home() {
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6"
           >
             {features.map((feature, idx) => (
-              <motion.div key={idx} variants={fadeInUp} className="flex items-center gap-3">
+              <motion.div key={idx} variants={fadeInUp} className="flex items-center gap-3 bg-white p-4 rounded-2xl border border-gray-100 shadow-2xs">
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${feature.bg}`}>
                   <div className="scale-75">
                     {feature.icon}

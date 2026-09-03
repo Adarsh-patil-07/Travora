@@ -5,7 +5,7 @@
 
 /* Custom Theme Tokens */
 @theme {
-  --color-primary: #F7F6F2;
+  --color-primary: #FAFAF7;
   --color-surface: #FFFFFF;
   --color-accent: #FFB800;
   --color-accent-hover: #E6A600;
@@ -19,12 +19,23 @@
 
 /* ===== Base Styles ===== */
 
-
-
 html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Desktop proportional scaling: makes 100% screen scale look crisp and compact (like 80%-85% zoom) */
+@media (min-width: 1024px) {
+  html {
+    font-size: 87.5%; /* 14px root scale - scales all rem spacing, fonts, and dimensions proportionally */
+  }
+}
+
+@media (min-width: 1600px) {
+  html {
+    font-size: 90%;
+  }
 }
 
 /* Prevent iOS Safari auto-zoom on input focus (requires font-size >= 16px) */
@@ -65,12 +76,14 @@ body {
   font-family: var(--font-instrument-serif);
 }
 
-/* ===== Focus States (Accessibility) ===== */
+/* ===== Clean Focus States ===== */
 
 *:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
-  border-radius: 4px;
+  outline: none;
+}
+
+input:focus, textarea:focus, select:focus, button:focus {
+  outline: none !important;
 }
 
 /* ===== Skip to Content (Accessibility) ===== */
@@ -92,24 +105,22 @@ body {
   left: 0;
 }
 
-/* ===== Scrollbar Styling ===== */
+/* ===== Globally Hide Scrollbars Across Entire Web App (Desktop & Mobile) ===== */
 
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+*::-webkit-scrollbar,
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
 }
 
-::-webkit-scrollbar-track {
-  background: var(--color-primary);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-muted);
+html,
+body,
+* {
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE and Edge */
 }
 
 /* ===== Selection ===== */
@@ -119,13 +130,13 @@ body {
   color: white;
 }
 
-/* Hide scrollbar for elements with the .no-scrollbar class */
+/* Hide scrollbar utility */
 @layer utilities {
   .no-scrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none !important;  /* IE and Edge */
+    scrollbar-width: none !important;  /* Firefox */
   }
   .no-scrollbar::-webkit-scrollbar {
-    display: none;
+    display: none !important;
   }
 }

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
-  User, Settings, LogOut, MapPin, Heart, Globe, ChevronDown, Camera, Trash2, ArrowRight, Sparkles, Calendar, Compass
+  User, Settings, LogOut, MapPin, Heart, Globe, ChevronDown, Trash2, ArrowRight, Sparkles, Calendar, Compass
 } from 'lucide-react';
 import { pageTransition, fadeInUp, staggerContainer } from '../lib/motion';
 import { destinations } from '../data/destinations';
@@ -99,7 +99,7 @@ export default function Profile() {
       initial="initial"
       animate="animate"
       exit="exit"
-      className="w-full bg-[#F8F9FA] min-h-screen flex-1 flex flex-col pt-16 md:pt-[72px]"
+      className="w-full bg-[#FAFAF7] min-h-screen flex-1 flex flex-col pt-16 md:pt-[72px]"
     >
       {/* Cover Banner */}
       <div className="w-full h-40 md:h-72 lg:h-[340px] relative overflow-hidden bg-gray-900">
@@ -108,7 +108,7 @@ export default function Profile() {
           alt="Cover" 
           className="w-full h-full object-cover opacity-80"
         />
-        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#F8F9FA] to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#FAFAF7] to-transparent pointer-events-none" />
       </div>
 
       {/* Main Content Container */}
@@ -127,11 +127,6 @@ export default function Profile() {
                   <div className="w-20 h-20 md:w-32 md:h-32 bg-gray-100 rounded-full flex items-center justify-center border-4 border-white shadow-md">
                     <User size={48} className="text-gray-400" />
                   </div>
-                )}
-                {user && (
-                  <button className="absolute bottom-0 right-0 md:bottom-2 md:right-2 w-7 h-7 md:w-8 md:h-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full flex items-center justify-center shadow-lg transition-colors border-2 border-white">
-                    <Camera size={14} />
-                  </button>
                 )}
               </div>
               
@@ -164,61 +159,55 @@ export default function Profile() {
             
             {/* Navigation Tabs */}
             {user && (
-              <motion.div variants={fadeInUp} className="grid grid-cols-3 gap-2.5 md:gap-3 xl:gap-4">
+              <motion.div variants={fadeInUp} className="grid grid-cols-3 gap-2 md:gap-4">
                 <button 
                   onClick={() => setActiveTab('favorites')}
-                  className={`group flex items-center justify-start gap-2.5 md:gap-3 rounded-[26px] border px-3 py-3 md:px-4 md:py-4 text-left cursor-pointer transition-all duration-200 ${
-                    activeTab === 'favorites'
-                      ? 'bg-[#fdf0f3] border-[#f5c7d1] shadow-[0_10px_28px_rgba(236,115,160,0.12)]'
-                      : 'bg-[#fff7f9] border-[#f3dce2] hover:bg-[#fff0f4]'
+                  className={`flex items-center p-2.5 sm:p-3 md:p-5 rounded-2xl md:rounded-3xl border transition-all text-left cursor-pointer ${
+                    activeTab === 'favorites' 
+                      ? 'bg-white border-pink-200 shadow-md ring-2 ring-pink-400/20' 
+                      : 'bg-white/70 border-gray-100 hover:bg-white'
                   }`}
                 >
-                  <div className={`flex h-8 w-8 md:h-9 md:w-9 items-center justify-center rounded-2xl shrink-0 transition-colors ${
-                    activeTab === 'favorites' ? 'bg-[#f8dfe8] text-pink-600' : 'bg-pink-100 text-pink-500'
-                  }`}>
-                    <Heart size={13} className="md:w-[15px] md:h-[15px]" />
+                  <div className="w-7 h-7 sm:w-9 sm:h-9 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-pink-50 flex items-center justify-center text-pink-500 mr-2 md:mr-4 shrink-0">
+                    <Heart size={15} className="md:w-6 md:h-6" />
                   </div>
-                  <div className="min-w-0 flex-1 text-left">
-                    <h3 className="text-[10px] font-bold leading-tight text-gray-900 sm:text-[11px] md:text-sm">Favorites</h3>
-                    <p className="text-[9px] leading-tight text-gray-500 sm:text-[10px] md:text-[11px]">{savedDestinationsList.length} places</p>
+                  <div className="min-w-0">
+                    <h3 className="text-gray-900 font-bold text-xs md:text-base truncate">Favorites</h3>
+                    <p className="text-gray-500 text-[9px] sm:text-[10px] md:text-xs">{savedDestinationsList.length} places</p>
                   </div>
                 </button>
 
                 <button 
                   onClick={() => setActiveTab('trips')}
-                  className={`group flex items-center justify-start gap-2.5 md:gap-3 rounded-[26px] border px-3 py-3 md:px-4 md:py-4 text-left cursor-pointer transition-all duration-200 ${
-                    activeTab === 'trips'
-                      ? 'bg-[#f6f2ff] border-[#d9ccff] shadow-[0_10px_28px_rgba(139,92,246,0.12)]'
-                      : 'bg-[#faf7ff] border-[#e8dcff] hover:bg-[#f4eeff]'
+                  className={`flex items-center p-2.5 sm:p-3 md:p-5 rounded-2xl md:rounded-3xl border transition-all text-left cursor-pointer ${
+                    activeTab === 'trips' 
+                      ? 'bg-white border-purple-200 shadow-md ring-2 ring-purple-400/20' 
+                      : 'bg-white/70 border-gray-100 hover:bg-white'
                   }`}
                 >
-                  <div className={`flex h-8 w-8 md:h-9 md:w-9 items-center justify-center rounded-2xl shrink-0 transition-colors ${
-                    activeTab === 'trips' ? 'bg-[#eae3ff] text-violet-600' : 'bg-violet-100 text-violet-500'
-                  }`}>
-                    <Compass size={13} className="md:w-[15px] md:h-[15px]" />
+                  <div className="w-7 h-7 sm:w-9 sm:h-9 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600 mr-2 md:mr-4 shrink-0">
+                    <Compass size={15} className="md:w-6 md:h-6" />
                   </div>
-                  <div className="min-w-0 flex-1 text-left">
-                    <h3 className="text-[10px] font-bold leading-tight text-gray-900 sm:text-[11px] md:text-sm">My Trips</h3>
-                    <p className="text-[9px] leading-tight text-gray-500 sm:text-[10px] md:text-[11px]">{savedTripsList.length} planned</p>
+                  <div className="min-w-0">
+                    <h3 className="text-gray-900 font-bold text-xs md:text-base truncate">My Trips</h3>
+                    <p className="text-gray-500 text-[9px] sm:text-[10px] md:text-xs">{savedTripsList.length} planned</p>
                   </div>
                 </button>
 
                 <button 
                   onClick={() => setActiveTab('settings')}
-                  className={`group flex items-center justify-start gap-2.5 md:gap-3 rounded-[26px] border px-3 py-3 md:px-4 md:py-4 text-left cursor-pointer transition-all duration-200 ${
-                    activeTab === 'settings'
-                      ? 'bg-[#edf8ff] border-[#cfe8ff] shadow-[0_10px_28px_rgba(59,130,246,0.12)]'
-                      : 'bg-[#f6fbff] border-[#dfeefd] hover:bg-[#edf7ff]'
+                  className={`flex items-center p-2.5 sm:p-3 md:p-5 rounded-2xl md:rounded-3xl border transition-all text-left cursor-pointer ${
+                    activeTab === 'settings' 
+                      ? 'bg-white border-blue-200 shadow-md ring-2 ring-blue-400/20' 
+                      : 'bg-white/70 border-gray-100 hover:bg-white'
                   }`}
                 >
-                  <div className={`flex h-8 w-8 md:h-9 md:w-9 items-center justify-center rounded-2xl shrink-0 transition-colors ${
-                    activeTab === 'settings' ? 'bg-[#dceeff] text-blue-600' : 'bg-blue-100 text-blue-500'
-                  }`}>
-                    <Settings size={13} className="md:w-[15px] md:h-[15px]" />
+                  <div className="w-7 h-7 sm:w-9 sm:h-9 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-blue-50 flex items-center justify-center text-blue-500 mr-2 md:mr-4 shrink-0">
+                    <Settings size={15} className="md:w-6 md:h-6" />
                   </div>
-                  <div className="min-w-0 flex-1 text-left">
-                    <h3 className="text-[10px] font-bold leading-tight text-gray-900 sm:text-[11px] md:text-sm">Settings</h3>
-                    <p className="text-[9px] leading-tight text-gray-500 sm:text-[10px] md:text-[11px]">Preferences</p>
+                  <div className="min-w-0">
+                    <h3 className="text-gray-900 font-bold text-xs md:text-base truncate">Settings</h3>
+                    <p className="text-gray-500 text-[9px] sm:text-[10px] md:text-xs">Preferences</p>
                   </div>
                 </button>
               </motion.div>
@@ -226,10 +215,10 @@ export default function Profile() {
 
             {/* TAB CONTENT: FAVORITES */}
             {activeTab === 'favorites' && user && (
-              <motion.div variants={fadeInUp} className="bg-white rounded-3xl p-5 md:p-6 border border-gray-100 shadow-sm">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="font-bold text-gray-900 text-lg md:text-xl flex items-center gap-2">
-                    <Heart size={20} className="text-pink-500 fill-pink-500" /> Saved Destinations
+              <motion.div variants={fadeInUp} className="bg-white rounded-2xl md:rounded-3xl p-4 sm:p-5 md:p-6 border border-gray-100 shadow-sm">
+                <div className="flex items-center justify-between mb-4 md:mb-6">
+                  <h3 className="font-bold text-gray-900 text-base md:text-xl flex items-center gap-2">
+                    <Heart size={18} className="text-pink-500 fill-pink-500" /> Saved Destinations
                   </h3>
                   <Link to="/explore" className="text-xs text-blue-600 font-semibold hover:underline">
                     + Explore more
@@ -237,47 +226,48 @@ export default function Profile() {
                 </div>
 
                 {savedDestinationsList.length === 0 ? (
-                  <div className="text-center py-12 px-4 border border-dashed border-gray-200 rounded-2xl">
-                    <div className="w-12 h-12 rounded-full bg-pink-50 text-pink-500 flex items-center justify-center mx-auto mb-3">
-                      <Heart size={20} />
+                  <div className="text-center py-10 px-4 border border-dashed border-gray-200 rounded-2xl">
+                    <div className="w-10 h-10 rounded-full bg-pink-50 text-pink-500 flex items-center justify-center mx-auto mb-2.5">
+                      <Heart size={18} />
                     </div>
-                    <h4 className="font-bold text-gray-900 mb-1 text-sm md:text-base">No favorites yet</h4>
-                    <p className="text-gray-500 text-xs md:text-sm mb-4">Click the heart icon on any destination to save it here.</p>
-                    <Link to="/explore" className="inline-flex items-center gap-2 bg-gray-900 text-white text-xs font-semibold px-4 py-2.5 rounded-full hover:bg-gray-800 transition-colors">
-                      Discover Destinations <ArrowRight size={14} />
+                    <h4 className="font-bold text-gray-900 mb-1 text-xs md:text-base">No favorites yet</h4>
+                    <p className="text-gray-500 text-[11px] md:text-sm mb-3">Click the heart icon on any destination to save it here.</p>
+                    <Link to="/explore" className="inline-flex items-center gap-1.5 bg-gray-900 text-white text-xs font-semibold px-3.5 py-2 rounded-full hover:bg-gray-800 transition-colors">
+                      Discover Destinations <ArrowRight size={13} />
                     </Link>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4">
                     {savedDestinationsList.map(dest => {
                       const imgUrl = destinationImages[dest.id] || `https://image.pollinations.ai/prompt/${encodeURIComponent(dest.imageQuery)}?width=800&height=500&nologo=true`;
                       return (
                         <Link 
                           key={dest.id}
                           to={`/destination/${dest.id}`}
-                          className="group relative flex bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 hover:border-gray-200 hover:shadow-md transition-all"
+                          className="group relative flex items-center bg-gray-50 rounded-xl sm:rounded-2xl overflow-hidden border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all"
                         >
-                          <div className="w-28 h-28 shrink-0 overflow-hidden">
+                          {/* Compact image on mobile (h-20 w-20), scales up on tablet/desktop */}
+                          <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 shrink-0 overflow-hidden bg-gray-200">
                             <img src={imgUrl} alt={dest.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                           </div>
-                          <div className="p-3 flex-1 flex flex-col justify-between min-w-0">
+                          <div className="p-2.5 sm:p-3 flex-1 flex flex-col justify-between min-w-0 h-full py-2">
                             <div>
                               <div className="flex items-center justify-between gap-1">
-                                <h4 className="font-bold text-gray-900 text-sm md:text-base truncate">{dest.name}</h4>
+                                <h4 className="font-bold text-gray-900 text-xs sm:text-sm md:text-base truncate leading-snug">{dest.name}</h4>
                                 <button
                                   onClick={(e) => handleRemoveFavorite(dest.id, e)}
-                                  className="p-1 text-gray-400 hover:text-red-500 transition-colors rounded-full hover:bg-white"
+                                  className="p-1 text-gray-400 hover:text-red-500 transition-colors rounded-full hover:bg-white shrink-0 cursor-pointer"
                                   title="Remove from favorites"
                                 >
-                                  <Trash2 size={14} />
+                                  <Trash2 size={13} />
                                 </button>
                               </div>
-                              <p className="text-gray-500 text-xs flex items-center gap-1 mt-0.5">
-                                <MapPin size={12} /> {dest.country}
+                              <p className="text-gray-500 text-[10px] sm:text-xs flex items-center gap-1 mt-0.5">
+                                <MapPin size={11} /> {dest.country}
                               </p>
                             </div>
-                            <span className="text-[11px] text-blue-600 font-semibold flex items-center gap-1 mt-2">
-                              View destination <ArrowRight size={12} />
+                            <span className="text-[10px] sm:text-[11px] text-blue-600 font-semibold flex items-center gap-1 mt-1.5">
+                              View destination <ArrowRight size={11} />
                             </span>
                           </div>
                         </Link>
@@ -290,10 +280,10 @@ export default function Profile() {
 
             {/* TAB CONTENT: MY TRIPS */}
             {activeTab === 'trips' && user && (
-              <motion.div variants={fadeInUp} className="bg-white rounded-3xl p-5 md:p-6 border border-gray-100 shadow-sm">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="font-bold text-gray-900 text-lg md:text-xl flex items-center gap-2">
-                    <Compass size={20} className="text-purple-600" /> My Planned Trips
+              <motion.div variants={fadeInUp} className="bg-white rounded-2xl md:rounded-3xl p-4 sm:p-5 md:p-6 border border-gray-100 shadow-sm">
+                <div className="flex items-center justify-between mb-4 md:mb-6">
+                  <h3 className="font-bold text-gray-900 text-base md:text-xl flex items-center gap-2">
+                    <Compass size={18} className="text-purple-600" /> My Planned Trips
                   </h3>
                   <Link to="/planner" className="text-xs text-purple-600 font-semibold hover:underline">
                     + Plan new trip
@@ -301,30 +291,30 @@ export default function Profile() {
                 </div>
 
                 {savedTripsList.length === 0 ? (
-                  <div className="text-center py-12 px-4 border border-dashed border-gray-200 rounded-2xl">
-                    <div className="w-12 h-12 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center mx-auto mb-3">
-                      <Calendar size={20} />
+                  <div className="text-center py-10 px-4 border border-dashed border-gray-200 rounded-2xl">
+                    <div className="w-10 h-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center mx-auto mb-2.5">
+                      <Calendar size={18} />
                     </div>
-                    <h4 className="font-bold text-gray-900 mb-1 text-sm md:text-base">No trips planned yet</h4>
-                    <p className="text-gray-500 text-xs md:text-sm mb-4">Let Waylo craft your dream itinerary in seconds.</p>
-                    <Link to="/planner" className="inline-flex items-center gap-2 bg-[#5538EE] text-white text-xs font-semibold px-4 py-2.5 rounded-full hover:bg-[#4A2699] transition-colors">
-                      <Sparkles size={14} /> Plan a Trip with AI
+                    <h4 className="font-bold text-gray-900 mb-1 text-xs md:text-base">No trips planned yet</h4>
+                    <p className="text-gray-500 text-[11px] md:text-sm mb-3">Let Waylo craft your dream itinerary in seconds.</p>
+                    <Link to="/planner" className="inline-flex items-center gap-1.5 bg-[#5538EE] text-white text-xs font-semibold px-3.5 py-2 rounded-full hover:bg-[#4A2699] transition-colors">
+                      <Sparkles size={13} /> Plan a Trip with AI
                     </Link>
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-2.5 md:space-y-3">
                     {savedTripsList.map((trip) => (
                       <div 
                         key={trip.id}
-                        className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100 hover:border-purple-200 transition-all gap-3"
+                        className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 bg-gray-50 rounded-xl sm:rounded-2xl border border-gray-100 hover:border-purple-200 transition-all gap-2.5 sm:gap-3"
                       >
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600 shrink-0 font-bold text-sm">
-                            <Sparkles size={18} />
+                        <div className="flex items-center gap-2.5 sm:gap-3">
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600 shrink-0 font-bold text-xs sm:text-sm">
+                            <Sparkles size={16} />
                           </div>
                           <div>
-                            <h4 className="font-bold text-gray-900 text-sm md:text-base">{trip.destination}</h4>
-                            <p className="text-xs text-gray-500 font-medium">
+                            <h4 className="font-bold text-gray-900 text-xs sm:text-sm md:text-base">{trip.destination}</h4>
+                            <p className="text-[10px] sm:text-xs text-gray-500 font-medium">
                               {trip.duration} • Created {new Date(trip.createdAt).toLocaleDateString()}
                             </p>
                           </div>
@@ -333,16 +323,16 @@ export default function Profile() {
                         <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
                           <button
                             onClick={() => navigate('/planner', { state: { itineraryData: trip.itinerary } })}
-                            className="flex-1 sm:flex-none px-4 py-2 bg-[#5538EE] hover:bg-[#4A2699] text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                            className="flex-1 sm:flex-none px-3 py-1.5 sm:px-4 sm:py-2 bg-[#5538EE] hover:bg-[#4A2699] text-white rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-semibold flex items-center justify-center gap-1 transition-colors cursor-pointer"
                           >
-                            View Itinerary <ArrowRight size={12} />
+                            View Itinerary <ArrowRight size={11} />
                           </button>
                           <button
                             onClick={(e) => handleDeleteTrip(trip.id, e)}
-                            className="p-2 text-gray-400 hover:text-red-500 rounded-xl hover:bg-white transition-colors cursor-pointer"
+                            className="p-1.5 text-gray-400 hover:text-red-500 rounded-lg sm:rounded-xl hover:bg-white transition-colors cursor-pointer shrink-0"
                             title="Delete trip"
                           >
-                            <Trash2 size={16} />
+                            <Trash2 size={14} />
                           </button>
                         </div>
                       </div>
@@ -354,10 +344,10 @@ export default function Profile() {
 
             {/* TAB CONTENT: SETTINGS (OR IF NOT LOGGED IN) */}
             {(activeTab === 'settings' || !user) && (
-              <motion.div variants={fadeInUp} className="bg-white rounded-3xl border border-gray-100 shadow-sm relative z-10">
-                <div className="px-5 py-4 md:px-6 md:py-5 border-b border-gray-50 bg-gray-50/50 rounded-t-3xl">
-                  <h3 className="font-bold text-gray-900 flex items-center gap-2 text-sm md:text-base">
-                    <Settings size={18} className="text-gray-400" />
+              <motion.div variants={fadeInUp} className="bg-white rounded-2xl md:rounded-3xl border border-gray-100 shadow-sm relative z-10">
+                <div className="px-4 py-3.5 md:px-6 md:py-5 border-b border-gray-50 bg-gray-50/50 rounded-t-2xl md:rounded-t-3xl">
+                  <h3 className="font-bold text-gray-900 flex items-center gap-2 text-xs sm:text-sm md:text-base">
+                    <Settings size={16} className="text-gray-400" />
                     Preferences
                   </h3>
                 </div>
@@ -367,13 +357,13 @@ export default function Profile() {
                     <label className="block text-[10px] md:text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Display Language</label>
                     <button 
                       onClick={() => setIsLangOpen(!isLangOpen)}
-                      className="w-full flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-200 hover:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all cursor-pointer"
+                      className="w-full flex items-center justify-between p-3 sm:p-4 bg-gray-50 rounded-xl sm:rounded-2xl border border-gray-200 hover:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all cursor-pointer"
                     >
-                      <div className="flex items-center gap-3">
-                        <Globe size={18} className="text-blue-500" />
-                        <span className="font-medium text-sm text-gray-900">{currentLang.name}</span>
+                      <div className="flex items-center gap-2.5">
+                        <Globe size={16} className="text-blue-500" />
+                        <span className="font-medium text-xs sm:text-sm text-gray-900">{currentLang.name}</span>
                       </div>
-                      <ChevronDown size={16} className={`text-gray-400 transition-transform duration-200 ${isLangOpen ? 'rotate-180' : ''}`} />
+                      <ChevronDown size={14} className={`text-gray-400 transition-transform duration-200 ${isLangOpen ? 'rotate-180' : ''}`} />
                     </button>
 
                     <AnimatePresence>
@@ -389,13 +379,13 @@ export default function Profile() {
                             <button
                               key={lang.code}
                               onClick={() => handleLanguageChange(lang)}
-                              className={`w-full text-left px-4 py-3 transition-colors flex items-center justify-between cursor-pointer ${
+                              className={`w-full text-left px-4 py-2.5 transition-colors flex items-center justify-between cursor-pointer ${
                                 currentLang.code === lang.code 
                                   ? 'bg-blue-50 text-blue-600 font-semibold' 
                                   : 'text-gray-700 hover:bg-gray-50'
                               }`}
                             >
-                              <span className="text-sm">{lang.name}</span>
+                              <span className="text-xs sm:text-sm">{lang.name}</span>
                               <span className="text-[10px] uppercase font-bold opacity-50 ml-3">{lang.display}</span>
                             </button>
                           ))}

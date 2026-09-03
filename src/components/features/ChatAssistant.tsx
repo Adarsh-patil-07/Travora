@@ -1,18 +1,26 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, Sparkles, RefreshCw, MapPin } from 'lucide-react';
+import { X, Send, Sparkles, RefreshCw, MapPin, ArrowRight, User } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { useLocation } from 'react-router-dom';
 import { destinations } from '../../data/destinations';
 import { sendMessageToWaylo } from '../../services/ai';
+import { useAuth } from '../../contexts/AuthContext';
 import type { ChatMessage } from '../../types';
 
 export default function ChatAssistant() {
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const firstName = user?.displayName ? user.displayName.split(' ')[0] : null;
+
+  const welcomeContent = `Hey ${firstName ? firstName : 'there'}! 👋 I'm **Waylo**, your personal AI travel companion.
+
+Ask me for **custom itineraries**, **hidden gems**, **local food spots**, or travel tips across the globe! ✈️`;
+
   const [messages, setMessages] = useState<ChatMessage[]>([{
     id: 'welcome',
     role: 'assistant',
-    content: "Hi! I'm Waylo. Where are we heading next?",
+    content: welcomeContent,
     timestamp: new Date()
   }]);
   const [input, setInput] = useState('');
@@ -36,13 +44,25 @@ export default function ChatAssistant() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
 
+  const handleResetConversation = () => {
+    setMessages([{
+      id: 'welcome',
+      role: 'assistant',
+      content: welcomeContent,
+      timestamp: new Date()
+    }]);
+    setInput('');
+    setError(null);
+  };
+
   const handleSend = async (text: string = input) => {
-    if (!text.trim() || isLoading) return;
+    const messageToSend = text.trim();
+    if (!messageToSend || isLoading) return;
 
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
       role: 'user',
-      content: text.trim(),
+      content: messageToSend,
       timestamp: new Date()
     };
 
@@ -52,7 +72,6 @@ export default function ChatAssistant() {
     setError(null);
 
     try {
-      // Send message history (excluding welcome/errors if we want to save tokens, but sending all for context is better)
       const historyToSync = [...messages, userMessage].filter(m => m.id !== 'welcome');
       const responseText = await sendMessageToWaylo(historyToSync, chatContext);
       
@@ -66,21 +85,21 @@ export default function ChatAssistant() {
       setMessages(prev => [...prev, assistantMessage]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
-      // Remove the user message optimistically added so they can try again? 
-      // Actually it's better to keep it and show a retry button on the error state.
     } finally {
       setIsLoading(false);
     }
   };
 
-  const suggestions = currentDest ? [
-    "What's the best local food here?",
-    "Plan me a 3-day itinerary",
-    "Hidden gems in this area?"
+  const suggestedQuestions = currentDest ? [
+    { text: `Best local food in ${currentDest.name}`, emoji: '🍜' },
+    { text: `Plan a 3-day itinerary for ${currentDest.name}`, emoji: '🗺️' },
+    { text: `Top hidden gems around ${currentDest.name}`, emoji: '💎' },
+    { text: `Best photo spots in ${currentDest.name}`, emoji: '📸' }
   ] : [
-    "Recommend a beach destination",
-    "Where is good for adventure?",
-    "Best places for foodies?"
+    { text: 'Plan a 3-day trip to Bali', emoji: '🏝️' },
+    { text: 'Top hidden gems in Tokyo', emoji: '🌸' },
+    { text: 'Best street food spots in Rome', emoji: '🍝' },
+    { text: 'Budget-friendly European destinations', emoji: '🎒' }
   ];
 
   return (
@@ -92,11 +111,13 @@ export default function ChatAssistant() {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(true)}
-        className="hidden lg:flex fixed bottom-8 right-8 z-40 bg-[#111111] text-white px-6 py-3.5 rounded-full shadow-[0_0_12px_rgba(255,184,0,0.15)] border border-accent/20 items-center justify-center hover:bg-[#1a1a1a] hover:shadow-[0_0_15px_rgba(255,184,0,0.25)] transition-all group gap-3"
+        className="hidden lg:flex fixed bottom-6 right-6 z-40 bg-white hover:bg-gray-50 text-gray-900 px-5 py-2.5 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-gray-200/90 hover:border-purple-300 hover:shadow-[0_10px_36px_rgba(85,56,238,0.2)] transition-all group gap-2.5 cursor-pointer"
         aria-label="Open AI Assistant"
       >
-        <Sparkles size={20} className="text-accent group-hover:scale-110 transition-transform" />
-        <span className="font-medium tracking-wide">Ask Waylo</span>
+        <div className="w-5 h-5 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 group-hover:scale-110 transition-transform">
+          <Sparkles size={12} />
+        </div>
+        <span className="font-bold text-xs tracking-wide text-gray-800">Ask Waylo</span>
       </motion.button>
 
       {/* Chat Panel Overlay */}
@@ -109,127 +130,177 @@ export default function ChatAssistant() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 md:hidden"
+              className="fixed inset-0 bg-black/40 backdrop-blur-xs z-40 md:hidden"
             />
 
-            {/* Chat Window */}
+            {/* Chat Window - Light, Clean, Website-Matching Theme */}
             <motion.div
-              initial={{ x: '100%', y: 0 }}
-              animate={{ x: 0, y: 0 }}
-              exit={{ x: '100%', y: 0 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed bottom-0 right-0 z-50 w-full h-[85vh] md:w-[440px] md:h-[650px] lg:w-[480px] lg:h-[720px] md:bottom-8 md:right-8 bg-surface flex flex-col md:rounded-3xl shadow-2xl overflow-hidden border border-border rounded-t-3xl md:rounded-t-3xl"
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.2 }}
+              className="fixed bottom-0 right-0 z-50 w-full h-[85vh] md:w-[370px] md:h-[540px] lg:w-[380px] lg:h-[560px] md:bottom-6 md:right-6 bg-white text-gray-900 flex flex-col md:rounded-3xl shadow-2xl overflow-hidden border border-gray-200/80 rounded-t-3xl"
             >
               {/* Header */}
-              <div className="bg-[#111111] text-white p-5 md:p-6 flex items-center justify-between shrink-0">
+              <div className="bg-white px-4 py-3.5 flex items-center justify-between shrink-0 border-b border-gray-100">
                 <div className="flex items-center gap-3">
-                  <Sparkles className="text-accent" size={24} />
+                  {/* Waylo Avatar with Online Status */}
+                  <div className="relative">
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#5538EE] to-[#8C65F7] flex items-center justify-center text-white shadow-xs">
+                      <Sparkles size={16} className="text-amber-300" />
+                    </div>
+                    <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white" />
+                  </div>
                   <div>
-                    <h3 className="font-instrument-serif text-2xl md:text-3xl leading-none mb-1">Waylo</h3>
-                    <p className="text-white/70 text-xs md:text-sm font-medium">Your AI travel companion</p>
+                    <div className="flex items-center gap-1.5">
+                      <h3 className="font-bold text-sm leading-tight text-gray-900">Waylo</h3>
+                      <span className="bg-purple-100 text-purple-700 text-[9px] font-extrabold px-1.5 py-0.2 rounded-md uppercase">
+                        AI
+                      </span>
+                    </div>
+                    <p className="text-emerald-600 text-[10px] font-semibold flex items-center gap-1 mt-0.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      Online
+                    </p>
                   </div>
                 </div>
-                <button 
-                  onClick={() => setIsOpen(false)}
-                  className="text-white/70 hover:text-white transition-colors p-2"
-                >
-                  <X size={24} />
-                </button>
+
+                <div className="flex items-center gap-1">
+                  <button 
+                    onClick={handleResetConversation}
+                    className="text-gray-400 hover:text-gray-700 transition-colors p-1.5 rounded-lg hover:bg-gray-100 cursor-pointer"
+                    title="Restart conversation"
+                  >
+                    <RefreshCw size={15} />
+                  </button>
+                  <button 
+                    onClick={() => setIsOpen(false)}
+                    className="text-gray-400 hover:text-gray-700 transition-colors p-1.5 rounded-lg hover:bg-gray-100 cursor-pointer"
+                    title="Close"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
               </div>
 
               {/* Context Banner */}
               {currentDest && (
-                <div className="bg-primary px-4 py-2 text-xs text-muted border-b border-border flex items-center gap-2">
-                  <MapPin size={12} />
-                  Waylo knows you're looking at {currentDest.name}
+                <div className="bg-purple-50 px-3.5 py-1.5 text-[11px] text-purple-700 border-b border-purple-100 flex items-center gap-1.5 font-medium">
+                  <MapPin size={12} className="shrink-0 text-purple-600" />
+                  <span className="truncate">Context: Looking at {currentDest.name}</span>
                 </div>
               )}
 
               {/* Messages Area */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-5 bg-[#F9F9F9]">
+              <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#FAFAF7] no-scrollbar">
                 {messages.map((msg) => (
                   <div 
                     key={msg.id} 
-                    className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                    className={`flex gap-2.5 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
+                    {msg.role === 'assistant' && (
+                      <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#5538EE] to-[#8C65F7] flex items-center justify-center text-white shrink-0 mt-0.5 shadow-xs">
+                        <Sparkles size={13} className="text-amber-300" />
+                      </div>
+                    )}
                     <div 
-                      className={`max-w-[85%] rounded-3xl px-5 py-4 text-sm md:text-base leading-relaxed shadow-sm ${
+                      className={`max-w-[82%] rounded-2xl px-3.5 py-2.5 text-xs leading-relaxed ${
                         msg.role === 'user' 
-                          ? 'bg-gradient-to-br from-accent to-[#F0A500] text-white rounded-br-sm' 
-                          : 'bg-white text-gray-800 border border-gray-200 rounded-bl-sm'
+                          ? 'bg-[#5538EE] text-white rounded-tr-xs shadow-xs font-medium' 
+                          : 'bg-white text-gray-800 border border-gray-100 shadow-xs rounded-tl-xs'
                       }`}
                     >
                       {msg.role === 'user' ? (
                         msg.content
                       ) : (
-                        <div className="prose prose-sm prose-slate max-w-none prose-p:leading-relaxed prose-headings:font-semibold prose-a:text-accent prose-ul:my-2 prose-li:my-0">
+                        <div className="prose prose-xs max-w-none prose-p:leading-relaxed prose-strong:text-gray-900 prose-a:text-purple-600 prose-ul:my-1 prose-li:my-0">
                           <ReactMarkdown>
                             {msg.content}
                           </ReactMarkdown>
                         </div>
                       )}
                     </div>
+                    {msg.role === 'user' && (
+                      <div className="w-7 h-7 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center shrink-0 mt-0.5">
+                        <User size={13} />
+                      </div>
+                    )}
                   </div>
                 ))}
                 
                 {isLoading && (
-                  <div className="flex justify-start">
-                    <div className="bg-white border border-gray-200 rounded-3xl rounded-bl-sm px-5 py-4 shadow-sm flex gap-1.5 items-center">
-                      <motion.div className="w-1.5 h-1.5 bg-accent rounded-full" animate={{ y: [0, -4, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0 }} />
-                      <motion.div className="w-1.5 h-1.5 bg-accent rounded-full" animate={{ y: [0, -4, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }} />
-                      <motion.div className="w-1.5 h-1.5 bg-accent rounded-full" animate={{ y: [0, -4, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }} />
+                  <div className="flex gap-2.5 justify-start">
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#5538EE] to-[#8C65F7] flex items-center justify-center text-white shrink-0 shadow-xs">
+                      <Sparkles size={13} className="text-amber-300" />
+                    </div>
+                    <div className="bg-white border border-gray-100 rounded-2xl rounded-tl-xs px-3.5 py-2.5 shadow-xs flex gap-1 items-center">
+                      <motion.div className="w-1.5 h-1.5 bg-purple-500 rounded-full" animate={{ y: [0, -3, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0 }} />
+                      <motion.div className="w-1.5 h-1.5 bg-purple-500 rounded-full" animate={{ y: [0, -3, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }} />
+                      <motion.div className="w-1.5 h-1.5 bg-purple-500 rounded-full" animate={{ y: [0, -3, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }} />
                     </div>
                   </div>
                 )}
                 
                 {error && (
-                  <div className="flex justify-center my-4">
-                    <div className="bg-red-50 text-red-600 text-xs md:text-sm px-4 py-3 rounded-2xl border border-red-100 flex flex-col items-center gap-2 max-w-[90%] text-center">
-                      <span className="font-medium">{error}</span>
-                      <button onClick={() => handleSend(messages[messages.length-1].content)} className="flex items-center gap-1 font-semibold hover:underline bg-red-100 px-3 py-1.5 rounded-full mt-1">
-                        <RefreshCw size={14} /> Retry
+                  <div className="flex justify-center my-2">
+                    <div className="bg-red-50 text-red-700 text-[11px] px-3 py-2 rounded-xl border border-red-100 flex items-center justify-between gap-2 w-full">
+                      <span className="truncate">{error}</span>
+                      <button onClick={() => handleSend(messages[messages.length-1].content)} className="flex items-center gap-1 font-semibold text-red-700 hover:underline shrink-0">
+                        <RefreshCw size={12} /> Retry
                       </button>
                     </div>
                   </div>
                 )}
+
+                {/* SUGGESTED QUESTIONS (Shown when on welcome state) */}
+                {messages.length === 1 && !isLoading && (
+                  <div className="pt-2">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-2 px-0.5">
+                      Suggested Questions
+                    </p>
+                    <div className="space-y-1.5">
+                      {suggestedQuestions.map((q, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => handleSend(q.text)}
+                          className="w-full bg-white hover:bg-purple-50/60 border border-gray-200/80 hover:border-purple-300 text-gray-800 hover:text-purple-950 rounded-xl px-3 py-2.5 flex items-center justify-between text-xs font-medium cursor-pointer transition-all text-left group shadow-2xs"
+                        >
+                          <span className="flex items-center gap-2 truncate">
+                            <span>{q.text}</span>
+                            <span className="text-xs">{q.emoji}</span>
+                          </span>
+                          <ArrowRight size={13} className="text-gray-400 group-hover:text-purple-600 group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Suggestions */}
-              {messages.length === 1 && !isLoading && (
-                <div className="px-5 pb-4 pt-2 flex flex-wrap gap-2 bg-[#F9F9F9]">
-                  {suggestions.map((suggestion, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => handleSend(suggestion)}
-                      className="bg-white border border-gray-200 text-sm md:text-base text-gray-600 px-4 py-2.5 rounded-2xl hover:border-accent hover:text-accent hover:shadow-md transition-all text-left leading-relaxed shadow-sm"
-                    >
-                      {suggestion}
-                    </button>
-                  ))}
-                </div>
-              )}
-
               {/* Input Area */}
-              <div className="p-4 md:p-5 bg-white border-t border-gray-100 shrink-0 shadow-[0_-10px_20px_rgba(0,0,0,0.02)]">
+              <div className="p-3 bg-white border-t border-gray-100 shrink-0">
                 <form 
                   onSubmit={(e) => { e.preventDefault(); handleSend(); }}
                   className="flex items-center gap-2 relative"
                 >
-                  <input
-                    type="text"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    placeholder="Ask Waylo anything..."
-                    className="flex-1 bg-gray-50 border border-gray-200 focus:border-accent/40 rounded-full pl-6 pr-14 py-3.5 md:py-4 text-sm md:text-base focus:ring-4 focus:ring-accent/10 focus:bg-white transition-all outline-none text-gray-900 placeholder:text-gray-400 shadow-inner"
-                    disabled={isLoading}
-                  />
+                  <div className="flex-1 bg-gray-50 border border-gray-200 focus-within:border-purple-500 focus-within:bg-white rounded-2xl flex items-center px-3.5 py-1 transition-all">
+                    <input
+                      type="text"
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      placeholder="Ask Waylo anything..."
+                      className="w-full bg-transparent outline-none text-xs text-gray-900 placeholder:text-gray-400 py-1.5"
+                      disabled={isLoading}
+                    />
+                  </div>
                   <button
                     type="submit"
                     disabled={!input.trim() || isLoading}
-                    className="absolute right-2 w-10 h-10 md:w-11 md:h-11 flex items-center justify-center bg-accent text-white rounded-full hover:bg-[#E6A600] disabled:opacity-50 disabled:bg-gray-300 transition-colors shadow-md"
+                    className="w-8 h-8 flex items-center justify-center bg-[#5538EE] hover:bg-[#4A2699] text-white rounded-xl disabled:opacity-40 transition-colors cursor-pointer shadow-xs shrink-0"
                   >
-                    <Send size={16} className="ml-0.5" />
+                    <Send size={13} className="ml-0.5" />
                   </button>
                 </form>
               </div>
