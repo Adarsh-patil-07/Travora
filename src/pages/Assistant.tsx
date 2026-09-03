@@ -148,47 +148,47 @@ export default function Assistant() {
                   <p className="text-[10px] md:text-xs text-gray-500 uppercase tracking-widest font-semibold">AI travel companion</p>
                 </div>
 
-                <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2 md:mb-3 text-center tracking-tight">Generate an Itinerary</h3>
-                <p className="text-gray-500 text-xs md:text-sm text-center max-w-md leading-relaxed mb-6 md:mb-8">
+                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 md:mb-4 text-center tracking-tight">Generate an Itinerary</h3>
+                <p className="text-gray-500 text-sm md:text-base text-center max-w-lg leading-relaxed mb-8 md:mb-10">
                   Tell me where you want to go and how many days you have, and I'll generate a comprehensive day-by-day plan. Or, just start chatting below!
                 </p>
                 
                 {/* Itinerary Generator Form */}
-                <form onSubmit={handleGenerate} className="w-full max-w-md bg-white border border-gray-200 rounded-2xl md:rounded-3xl p-4 md:p-6 shadow-sm">
-                  <div className="mb-4">
-                    <label className="block text-[10px] md:text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 md:mb-2">Destination</label>
+                <form onSubmit={handleGenerate} className="w-full max-w-lg bg-white border border-gray-200 rounded-2xl md:rounded-3xl p-6 md:p-8 shadow-sm">
+                  <div className="mb-6">
+                    <label className="block text-xs md:text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2 md:mb-3">Destination</label>
                     <div className="relative">
-                      <Map size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <Map size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                       <input 
                         type="text" 
                         value={destInput}
                         onChange={e => setDestInput(e.target.value)}
                         placeholder="e.g. Paris, France" 
                         required
-                        className="w-full bg-gray-50 border-none rounded-xl py-2.5 md:py-3 pl-10 md:pl-12 pr-4 text-xs md:text-sm focus:ring-2 focus:ring-purple-500 outline-none transition-shadow"
+                        className="w-full bg-gray-50 border-none rounded-xl py-3.5 md:py-4 pl-12 md:pl-14 pr-4 text-sm md:text-base focus:ring-2 focus:ring-purple-500 outline-none transition-shadow"
                       />
                     </div>
                   </div>
-                  <div className="mb-5 md:mb-6">
-                    <label className="block text-[10px] md:text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 md:mb-2">Duration (Days)</label>
+                  <div className="mb-8">
+                    <label className="block text-xs md:text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2 md:mb-3">Duration (Days)</label>
                     <input 
                       type="number" 
                       min="1" max="14"
                       value={daysInput}
                       onChange={e => setDaysInput(e.target.value)}
                       required
-                      className="w-full bg-gray-50 border-none rounded-xl py-2.5 md:py-3 px-4 text-xs md:text-sm focus:ring-2 focus:ring-purple-500 outline-none transition-shadow"
+                      className="w-full bg-gray-50 border-none rounded-xl py-3.5 md:py-4 px-5 text-sm md:text-base focus:ring-2 focus:ring-purple-500 outline-none transition-shadow"
                     />
                   </div>
                   <button 
                     type="submit" 
                     disabled={isGenerating}
-                    className="w-full bg-[#5538EE] hover:bg-[#4A2699] text-white rounded-xl py-3 md:py-3.5 text-xs md:text-sm font-semibold flex items-center justify-center gap-2 transition-colors disabled:opacity-70"
+                    className="w-full bg-[#5538EE] hover:bg-[#4A2699] text-white rounded-xl py-4 md:py-4 text-sm md:text-base font-semibold flex items-center justify-center gap-2 transition-colors disabled:opacity-70"
                   >
                     {isGenerating ? (
-                      <><Loader2 size={16} className="animate-spin" /> Generating Plan...</>
+                      <><Loader2 size={18} className="animate-spin" /> Generating Plan...</>
                     ) : (
-                      <><Sparkles size={16} /> Plan My Trip</>
+                      <><Sparkles size={18} /> Plan My Trip</>
                     )}
                   </button>
                 </form>
