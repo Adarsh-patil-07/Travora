@@ -138,17 +138,17 @@ export default function Planner() {
           <div className="flex-1">
             
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-6 mb-6 md:mb-10">
               <div>
-                <h1 className="text-2xl md:text-[28px] font-bold text-gray-900 mb-2 leading-tight">Day {currentDayData.day}: {currentDayData.title}</h1>
-                <p className="text-gray-500 text-sm font-medium">Explore the best spots seamlessly curated for you.</p>
+                <h1 className="text-lg md:text-[28px] font-bold text-gray-900 mb-1 md:mb-2 leading-tight">Day {currentDayData.day}: {currentDayData.title}</h1>
+                <p className="text-gray-500 text-xs md:text-sm font-medium">Explore the best spots seamlessly curated for you.</p>
               </div>
-              <div className="flex items-center gap-3 shrink-0">
-                <button className="flex items-center gap-2 px-4 py-2.5 rounded-full border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
-                  <Map size={16} /> Map view
+              <div className="flex items-center gap-2 md:gap-3 shrink-0">
+                <button className="flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-2 md:py-2.5 rounded-full border border-gray-200 text-xs md:text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
+                  <Map size={14} /> Map view
                 </button>
-                <button className="flex items-center gap-2 px-4 py-2.5 rounded-full border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
-                  <Download size={16} /> Download
+                <button className="flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-2 md:py-2.5 rounded-full border border-gray-200 text-xs md:text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
+                  <Download size={14} /> Download
                 </button>
               </div>
             </div>
@@ -156,9 +156,9 @@ export default function Planner() {
             {/* Timeline */}
             <div className="relative">
               {/* Vertical Line */}
-              <div className="absolute left-[88px] top-4 bottom-4 w-[2px] bg-purple-100/60 border-l border-dashed border-purple-200/80"></div>
+              <div className="absolute left-[52px] md:left-[88px] top-4 bottom-4 w-[2px] bg-purple-100/60 border-l border-dashed border-purple-200/80"></div>
               
-              <div className="space-y-8 md:space-y-12">
+              <div className="space-y-5 md:space-y-12">
                 {currentDayData.activities.map((item, index) => {
                   const tagInfo = getTagForActivity(item.title, item.description);
                   const genericImages = [
@@ -180,40 +180,42 @@ export default function Planner() {
                       initial="hidden"
                       animate="visible"
                       key={index} 
-                      className="relative flex items-start gap-6 md:gap-12"
+                      className="relative flex items-start gap-3 md:gap-12"
                     >
                       {/* Time */}
-                      <div className="w-[64px] shrink-0 pt-1">
-                        <span className="text-sm font-bold text-gray-900">{item.time}</span>
+                      <div className="w-[40px] md:w-[64px] shrink-0 pt-0.5 md:pt-1">
+                        <span className="text-[11px] md:text-sm font-bold text-gray-900">{item.time}</span>
                       </div>
 
                       {/* Timeline Node */}
-                      <div className="relative flex-shrink-0 flex items-center justify-center pt-2 w-4">
-                        <div className="absolute z-10 w-4 h-4 rounded-full bg-[#5538EE] ring-[6px] ring-[#F4F0FF] shadow-sm"></div>
+                      <div className="relative flex-shrink-0 flex items-center justify-center pt-1 md:pt-2 w-3 md:w-4">
+                        <div className="absolute z-10 w-3 h-3 md:w-4 md:h-4 rounded-full bg-[#5538EE] ring-4 md:ring-[6px] ring-[#F4F0FF] shadow-sm"></div>
                       </div>
 
                       {/* Content */}
-                      <div className="flex-1 flex flex-col md:flex-row gap-6 md:gap-8 justify-between pb-4">
-                        <div className="pt-1 max-w-lg">
-                          <div className="flex items-center gap-3 mb-2">
-                            <h3 className="text-lg font-bold text-gray-900">{item.title}</h3>
-                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${tagInfo.color}`}>
-                              {tagInfo.tag}
-                            </span>
+                      <div className="flex-1 min-w-0 pb-2 md:pb-4">
+                        <div className="flex flex-col md:flex-row gap-3 md:gap-8 justify-between">
+                          <div className="pt-0 md:pt-1 max-w-lg min-w-0">
+                            <div className="flex items-start gap-2 md:gap-3 mb-1 md:mb-2">
+                              <h3 className="text-sm md:text-lg font-bold text-gray-900 leading-tight">{item.title}</h3>
+                              <span className={`px-2 py-0.5 rounded-full text-[8px] md:text-[10px] font-bold uppercase tracking-wide whitespace-nowrap shrink-0 mt-0.5 ${tagInfo.color}`}>
+                                {tagInfo.tag}
+                              </span>
+                            </div>
+                            <p className="text-xs md:text-sm text-gray-500 leading-relaxed font-medium line-clamp-3 md:line-clamp-none">
+                              {item.description}
+                            </p>
                           </div>
-                          <p className="text-sm text-gray-500 leading-relaxed font-medium">
-                            {item.description}
-                          </p>
-                        </div>
 
-                        {/* Image */}
-                        <div className="shrink-0 w-full md:w-56 h-32 rounded-2xl overflow-hidden shadow-sm bg-gray-100">
-                          <img 
-                            src={actImage} 
-                            alt={item.title} 
-                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                            loading="lazy"
-                          />
+                          {/* Image — smaller on mobile */}
+                          <div className="shrink-0 w-full md:w-56 h-24 md:h-32 rounded-xl md:rounded-2xl overflow-hidden shadow-sm bg-gray-100">
+                            <img 
+                              src={actImage} 
+                              alt={item.title} 
+                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                              loading="lazy"
+                            />
+                          </div>
                         </div>
                       </div>
                     </motion.div>

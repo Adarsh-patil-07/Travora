@@ -44,13 +44,13 @@ function CustomSelect({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center justify-between pl-4 pr-4 py-3 md:py-4 bg-primary rounded-2xl border-none focus:ring-2 focus:ring-accent outline-none text-text transition-shadow text-sm md:text-base ${isOpen ? 'ring-2 ring-accent' : ''}`}
+        className={`w-full flex items-center justify-between pl-3 md:pl-4 pr-3 md:pr-4 py-2.5 md:py-4 bg-primary rounded-xl md:rounded-2xl border-none focus:ring-2 focus:ring-accent outline-none text-text transition-shadow text-xs md:text-base ${isOpen ? 'ring-2 ring-accent' : ''}`}
       >
-        <div className="flex items-center gap-2.5">
-          <Icon className="h-4 w-4 text-muted" />
-          <span className="capitalize font-medium">{selectedOption.label}</span>
+        <div className="flex items-center gap-2">
+          <Icon className="h-3.5 w-3.5 md:h-4 md:w-4 text-muted shrink-0" />
+          <span className="capitalize font-medium truncate">{selectedOption.label}</span>
         </div>
-        <ChevronDown size={14} className={`text-muted transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown size={12} className={`text-muted transition-transform duration-200 shrink-0 ml-1 md:ml-0 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       <AnimatePresence>
@@ -141,23 +141,23 @@ export default function Explore() {
         </div>
 
         {/* Filters Section */}
-        <div className="bg-surface p-4 md:p-6 rounded-3xl shadow-sm border border-border mb-8 md:mb-12 flex flex-col md:flex-row gap-4 md:gap-6">
+        <div className="bg-surface p-3 md:p-6 rounded-2xl md:rounded-3xl shadow-sm border border-border mb-6 md:mb-12 flex flex-col md:flex-row gap-2.5 md:gap-6">
           
           {/* Search Bar */}
           <div className="flex-1 relative">
-            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-muted" />
+            <div className="absolute inset-y-0 left-3 md:left-4 flex items-center pointer-events-none">
+              <Search className="h-4 w-4 md:h-5 md:w-5 text-muted" />
             </div>
             <input
               type="text"
               placeholder="Search destinations or countries..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 md:py-4 bg-primary rounded-2xl border-none focus:ring-2 focus:ring-accent outline-none text-text transition-shadow text-sm md:text-base"
+              className="w-full pl-9 md:pl-12 pr-4 py-2.5 md:py-4 bg-primary rounded-xl md:rounded-2xl border-none focus:ring-2 focus:ring-accent outline-none text-text transition-shadow text-sm md:text-base"
             />
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
+          <div className="flex flex-row gap-2 md:gap-4">
             {/* Continent Filter */}
             <CustomSelect
               value={selectedContinent}
