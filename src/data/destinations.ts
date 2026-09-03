@@ -13,6 +13,17 @@ export const destinations: Destination[] = [
     ]
   },
   {
+    id: 'goa', name: 'Goa', country: 'India', continent: 'Asia',
+    coordinates: { lat: 15.2993, lng: 74.1240 },
+    description: "India's coastal paradise famous for sun-kissed Arabian Sea beaches, Portuguese heritage, and vibrant nightlife.",
+    imageQuery: 'india goa beach sunset palms', tags: ['beach', 'nature', 'adventure'], bestTimeToVisit: 'November to February',
+    famousPlaces: [
+      { id: 'palolem', name: 'Palolem Beach', description: 'A scenic crescent beach lined with swaying coconut palms.', imageQuery: 'india goa palolem beach', category: 'Beach' },
+      { id: 'aguada', name: 'Fort Aguada', description: 'A 17th-century Portuguese fort and lighthouse overlooking the ocean.', imageQuery: 'india goa fort aguada lighthouse', category: 'Landmark' },
+      { id: 'dudhsagar', name: 'Dudhsagar Falls', description: 'A majestic four-tiered waterfall cascading through lush western ghats.', imageQuery: 'india goa dudhsagar waterfall falls', category: 'Nature' }
+    ]
+  },
+  {
     id: 'paris', name: 'Paris', country: 'France', continent: 'Europe',
     coordinates: { lat: 48.8566, lng: 2.3522 },
     description: "The global center for art, fashion, gastronomy, and culture, featuring a 19th-century cityscape.",
@@ -24,6 +35,28 @@ export const destinations: Destination[] = [
     ]
   },
   {
+    id: 'jaipur', name: 'Jaipur', country: 'India', continent: 'Asia',
+    coordinates: { lat: 26.9124, lng: 75.7873 },
+    description: "The vibrant 'Pink City' of Rajasthan, celebrated for its majestic palaces, ancient hill forts, and royal heritage.",
+    imageQuery: 'india jaipur hawa mahal rajasthan', tags: ['culture', 'city', 'food'], bestTimeToVisit: 'October to March (Winter)',
+    famousPlaces: [
+      { id: 'hawa-mahal', name: 'Hawa Mahal', description: 'The iconic Palace of Winds with 953 intricately carved windows.', imageQuery: 'india jaipur hawa mahal palace', category: 'Landmark' },
+      { id: 'amer-fort', name: 'Amer Fort', description: 'A magnificent hilltop fort overlooking Maota Lake.', imageQuery: 'india jaipur amer amber fort', category: 'Landmark' },
+      { id: 'city-palace', name: 'City Palace', description: 'A stunning complex of courtyards, gardens, and royal Rajasthani buildings.', imageQuery: 'india jaipur city palace', category: 'Landmark' }
+    ]
+  },
+  {
+    id: 'bangalore', name: 'Bengaluru', country: 'India', continent: 'Asia',
+    coordinates: { lat: 12.9716, lng: 77.5946 },
+    description: "The vibrant Garden City and Silicon Valley of India, famed for pleasant weather, lush parks, craft breweries, and royal palaces.",
+    imageQuery: 'india bangalore city skyline cubbon park', tags: ['city', 'nature', 'food'], bestTimeToVisit: 'October to March',
+    famousPlaces: [
+      { id: 'lalbagh', name: 'Lalbagh Botanical Garden', description: 'A 240-acre botanical garden housing a historic glasshouse.', imageQuery: 'lalbagh botanical garden bangalore', category: 'Park' },
+      { id: 'bangalore-palace', name: 'Bangalore Palace', description: 'A Tudor-style royal palace with fortified towers and wood carvings.', imageQuery: 'bangalore palace karnataka', category: 'Landmark' },
+      { id: 'cubbon-park', name: 'Cubbon Park', description: 'A landmark lung space in the heart of the city with lush flora.', imageQuery: 'cubbon park bangalore', category: 'Park' }
+    ]
+  },
+  {
     id: 'bali', name: 'Bali', country: 'Indonesia', continent: 'Asia',
     coordinates: { lat: -8.4095, lng: 115.1889 },
     description: "A picturesque Indonesian island known for its forested volcanic mountains, iconic rice paddies, and beaches.",
@@ -32,6 +65,17 @@ export const destinations: Destination[] = [
       { id: 'uluwatu', name: 'Uluwatu Temple', description: 'A Balinese Hindu sea temple located in Uluwatu.', imageQuery: 'uluwatu temple', category: 'Temple' },
       { id: 'ubud', name: 'Ubud Monkey Forest', description: 'A natural sanctuary for the Balinese long-tailed monkey.', imageQuery: 'ubud monkey forest', category: 'Nature' },
       { id: 'tegallalang', name: 'Tegallalang Rice Terrace', description: 'Famous scenic rice terraces in Ubud.', imageQuery: 'tegallalang rice terrace', category: 'Nature' }
+    ]
+  },
+  {
+    id: 'agra', name: 'Agra', country: 'India', continent: 'Asia',
+    coordinates: { lat: 27.1767, lng: 78.0081 },
+    description: "Home to the world-famous Taj Mahal, magnificent Mughal fortresses, and centuries of immortal imperial history.",
+    imageQuery: 'taj mahal agra india sunrise', tags: ['culture', 'city', 'food'], bestTimeToVisit: 'October to March',
+    famousPlaces: [
+      { id: 'taj-mahal', name: 'Taj Mahal', description: 'An ivory-white marble mausoleum on the south bank of the Yamuna river.', imageQuery: 'taj mahal agra wonder of the world', category: 'Landmark' },
+      { id: 'agra-fort', name: 'Agra Fort', description: 'A historical red sandstone fortress of the Mughal dynasty.', imageQuery: 'agra fort red sandstone', category: 'Landmark' },
+      { id: 'mehtab-bagh', name: 'Mehtab Bagh', description: 'A charbagh complex aligned perfectly with the Taj Mahal across the river.', imageQuery: 'mehtab bagh taj mahal sunset', category: 'Park' }
     ]
   },
   {
@@ -167,25 +211,80 @@ export const destinations: Destination[] = [
     ]
   },
   {
-    id: 'jaipur', name: 'Jaipur', country: 'India', continent: 'Asia',
-    coordinates: { lat: 26.9124, lng: 75.7873 },
-    description: "The vibrant 'Pink City' of Rajasthan, celebrated for its majestic palaces, ancient hill forts, and royal heritage.",
-    imageQuery: 'jaipur hawa mahal rajasthan', tags: ['culture', 'city', 'food'], bestTimeToVisit: 'October to March (Winter)',
+    id: 'varanasi', name: 'Varanasi', country: 'India', continent: 'Asia',
+    coordinates: { lat: 25.3176, lng: 82.9739 },
+    description: "The spiritual heart of India on the sacred banks of the Ganges, one of the oldest continuously inhabited cities on Earth.",
+    imageQuery: 'varanasi india ganga ghat aarti', tags: ['culture', 'city', 'food'], bestTimeToVisit: 'November to February',
     famousPlaces: [
-      { id: 'hawa-mahal', name: 'Hawa Mahal', description: 'The iconic Palace of Winds with 953 intricately carved windows.', imageQuery: 'hawa mahal jaipur', category: 'Landmark' },
-      { id: 'amer-fort', name: 'Amer Fort', description: 'A magnificent hilltop fort overlooking Maota Lake.', imageQuery: 'amer fort jaipur', category: 'Landmark' },
-      { id: 'city-palace', name: 'City Palace', description: 'A stunning complex of courtyards, gardens, and royal Rajasthani buildings.', imageQuery: 'city palace jaipur', category: 'Landmark' }
+      { id: 'dashashwamedh', name: 'Dashashwamedh Ghat', description: 'The main and most spectacular ghat known for the mesmerizing evening Ganga Aarti.', imageQuery: 'dashashwamedh ghat varanasi aarti', category: 'Landmark' },
+      { id: 'kashi-vishwanath', name: 'Kashi Vishwanath Temple', description: 'One of the most sacred Hindu temples dedicated to Lord Shiva.', imageQuery: 'kashi vishwanath temple varanasi', category: 'Temple' },
+      { id: 'assi-ghat', name: 'Assi Ghat', description: 'The southernmost ghat where pilgrims and travelers gather at dawn.', imageQuery: 'assi ghat varanasi sunrise', category: 'Landmark' }
     ]
   },
   {
-    id: 'goa', name: 'Goa', country: 'India', continent: 'Asia',
-    coordinates: { lat: 15.2993, lng: 74.1240 },
-    description: "India's coastal paradise famous for sun-kissed Arabian Sea beaches, Portuguese heritage, and vibrant nightlife.",
-    imageQuery: 'goa beach sunset palms', tags: ['beach', 'nature', 'adventure'], bestTimeToVisit: 'November to February',
+    id: 'kerala', name: 'Kerala', country: 'India', continent: 'Asia',
+    coordinates: { lat: 9.9312, lng: 76.2673 },
+    description: "Known as 'God's Own Country', celebrated for tranquil backwaters, mist-covered tea plantations, and pristine beaches.",
+    imageQuery: 'kerala backwaters houseboat palms', tags: ['nature', 'beach', 'culture'], bestTimeToVisit: 'September to March',
     famousPlaces: [
-      { id: 'palolem', name: 'Palolem Beach', description: 'A scenic crescent beach lined with swaying coconut palms.', imageQuery: 'palolem beach goa', category: 'Beach' },
-      { id: 'aguada', name: 'Fort Aguada', description: 'A 17th-century Portuguese fort and lighthouse overlooking the ocean.', imageQuery: 'fort aguada goa', category: 'Landmark' },
-      { id: 'dudhsagar', name: 'Dudhsagar Falls', description: 'A majestic four-tiered waterfall cascading through lush western ghats.', imageQuery: 'dudhsagar waterfall', category: 'Nature' }
+      { id: 'alleppey', name: 'Alleppey Backwaters', description: 'Sail through emerald palm-fringed canals on traditional houseboats.', imageQuery: 'alleppey backwaters houseboat kerala', category: 'Nature' },
+      { id: 'munnar', name: 'Munnar Tea Hills', description: 'Endless rolling hills covered with lush green tea plantations.', imageQuery: 'munnar tea plantations hills kerala', category: 'Nature' },
+      { id: 'varkala', name: 'Varkala Cliff Beach', description: 'Unique dramatic red cliffs overlooking the turquoise Arabian Sea.', imageQuery: 'varkala cliff beach kerala', category: 'Beach' }
+    ]
+  },
+  {
+    id: 'mumbai', name: 'Mumbai', country: 'India', continent: 'Asia',
+    coordinates: { lat: 18.9220, lng: 72.8347 },
+    description: "The energetic City of Dreams, featuring colonial Victorian architecture, the Arabian Sea coastline, and Bollywood.",
+    imageQuery: 'mumbai gateway of india marine drive', tags: ['city', 'culture', 'food'], bestTimeToVisit: 'October to March',
+    famousPlaces: [
+      { id: 'gateway-india', name: 'Gateway of India', description: 'An arch monument built during the 20th century overlooking Mumbai Harbour.', imageQuery: 'gateway of india mumbai', category: 'Landmark' },
+      { id: 'marine-drive', name: 'Marine Drive', description: 'A 3.6-kilometer-long boulevard along the coast known as the Queen’s Necklace.', imageQuery: 'marine drive queens necklace mumbai night', category: 'Neighborhood' },
+      { id: 'elephanta', name: 'Elephanta Caves', description: 'Ancient rock-cut cave temples dedicated to Shiva on Elephanta Island.', imageQuery: 'elephanta caves mumbai', category: 'Landmark' }
+    ]
+  },
+  {
+    id: 'udaipur', name: 'Udaipur', country: 'India', continent: 'Asia',
+    coordinates: { lat: 24.5854, lng: 73.7125 },
+    description: "The 'City of Lakes' and 'Venice of the East', famous for romantic marble palaces floating on shimmering waters.",
+    imageQuery: 'udaipur lake pichola city palace rajasthan', tags: ['culture', 'city', 'nature'], bestTimeToVisit: 'October to March',
+    famousPlaces: [
+      { id: 'udaipur-city-palace', name: 'City Palace Udaipur', description: 'A monumental palace complex overlooking Lake Pichola.', imageQuery: 'city palace udaipur lake pichola', category: 'Landmark' },
+      { id: 'lake-pichola', name: 'Lake Pichola', description: 'An artificial freshwater lake with romantic boat rides and island palaces.', imageQuery: 'lake pichola udaipur sunset', category: 'Nature' },
+      { id: 'jag-mandir', name: 'Jag Mandir', description: 'A palace built on an island in Lake Pichola, also known as the Lake Garden Palace.', imageQuery: 'jag mandir udaipur', category: 'Landmark' }
+    ]
+  },
+  {
+    id: 'manali', name: 'Manali', country: 'India', continent: 'Asia',
+    coordinates: { lat: 32.2432, lng: 77.1892 },
+    description: "A high-altitude Himalayan resort town known for snow-capped peaks, pine forests, and thrilling mountain adventures.",
+    imageQuery: 'manali himalayas snow mountains india', tags: ['adventure', 'nature'], bestTimeToVisit: 'October to June (Snow season: Dec-Feb)',
+    famousPlaces: [
+      { id: 'solang-valley', name: 'Solang Valley', description: 'A side valley at the top of Kullu Valley famous for snow sports and paragliding.', imageQuery: 'solang valley manali adventure', category: 'Adventure' },
+      { id: 'rohtang-pass', name: 'Rohtang Pass', description: 'A high mountain pass on the eastern Pir Panjal Range with dramatic glacier views.', imageQuery: 'rohtang pass snow manali', category: 'Nature' },
+      { id: 'hadimba', name: 'Hadimba Temple', description: 'An ancient wooden pagoda temple surrounded by cedar forest.', imageQuery: 'hadimba temple manali', category: 'Temple' }
+    ]
+  },
+  {
+    id: 'hampi', name: 'Hampi', country: 'India', continent: 'Asia',
+    coordinates: { lat: 15.3350, lng: 76.4600 },
+    description: "A UNESCO World Heritage site amidst a surreal boulder-strewn landscape, the ancient capital of the Vijayanagara Empire.",
+    imageQuery: 'hampi stone chariot virupaksha temple karnataka', tags: ['culture', 'adventure', 'nature'], bestTimeToVisit: 'October to February',
+    famousPlaces: [
+      { id: 'stone-chariot', name: 'Stone Chariot', description: 'An iconic stone-carved shrine dedicated to Garuda in the Vittala Temple.', imageQuery: 'stone chariot hampi vittala', category: 'Landmark' },
+      { id: 'virupaksha', name: 'Virupaksha Temple', description: 'A towering 7th-century sacred temple dedicated to Lord Shiva.', imageQuery: 'virupaksha temple hampi', category: 'Temple' },
+      { id: 'matanga-hill', name: 'Matanga Hill', description: 'The highest point in Hampi offering breathtaking 360-degree sunrise views.', imageQuery: 'matanga hill hampi sunrise', category: 'Nature' }
+    ]
+  },
+  {
+    id: 'andaman', name: 'Andaman Islands', country: 'India', continent: 'Asia',
+    coordinates: { lat: 11.7401, lng: 92.6586 },
+    description: "An archipelago of tropical islands in the Bay of Bengal with crystal turquoise waters, coral reefs, and pristine white beaches.",
+    imageQuery: 'andaman islands radhanagar beach turquoise ocean', tags: ['beach', 'nature', 'adventure'], bestTimeToVisit: 'October to May',
+    famousPlaces: [
+      { id: 'radhanagar', name: 'Radhanagar Beach', description: 'Award-winning white sand beach consistently ranked among Asia’s best beaches.', imageQuery: 'radhanagar beach havelock andaman', category: 'Beach' },
+      { id: 'cellular-jail', name: 'Cellular Jail', description: 'A historic colonial prison in Port Blair, now a revered national memorial.', imageQuery: 'cellular jail port blair andaman', category: 'Landmark' },
+      { id: 'ross-island', name: 'Ross Island (Netaji Subhash Chandra Bose Dweep)', description: 'An island enveloped by giant banyan roots and historical British ruins.', imageQuery: 'ross island andaman ruins', category: 'Nature' }
     ]
   }
 ];

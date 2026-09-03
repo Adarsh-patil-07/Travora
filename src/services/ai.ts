@@ -1,9 +1,10 @@
 import type { ChatMessage } from '../types';
 
-interface ChatContext {
+export interface ChatContext {
   name?: string;
   country?: string;
   places?: string;
+  currency?: string;
 }
 
 /**
@@ -54,11 +55,29 @@ async function fallbackDirectGeminiCall(messages: ChatMessage[], context?: ChatC
     throw new Error('API key is missing. Please add VITE_GROQ_API_KEY or VITE_GEMINI_API_KEY to .env.local');
   }
 
-  const systemText = context
-    ? `You are Waylo, Travora's AI travel companion. The user is currently viewing the destination page for ${context.name}, ${context.country}. Famous places here include: ${context.places}. 
-    CRITICAL INSTRUCTIONS: Be highly engaging and visually appealing. Always use emojis 🌴✨ for different sections. Use short, scannable paragraphs. Use bold text for emphasis. If providing an itinerary, use bold headers with emojis for days. Keep responses concise and fast to read.`
-    : `You are Waylo, Travora's AI travel companion. 
-    CRITICAL INSTRUCTIONS: Be highly engaging and visually appealing. Always use emojis 🌍✈️ for different sections. Format lists cleanly. Use short, scannable paragraphs. Use bold text for emphasis. If planning a trip, format it beautifully with emojis for morning/afternoon/evening. Keep responses concise and fast to read.`;
+  const currencyClause = context?.currency 
+    ? `\n- USER PREFERRED CURRENCY: ${context.currency}. Whenever you mention any prices, costs, budget estimates, food, taxi fares, entrance tickets, or hotel rates, ALWAYS calculate and quote them in ${context.currency}.`
+    : `\n- USER PREFERRED CURRENCY: INR (₹). Whenever you mention any prices or travel budgets, ALWAYS quote them in the active currency.`;
+
+  const baseRules = `You are Waylo, Travora's friendly and knowledgeable AI travel companion.
+STRICT SCOPE & DOMAIN RESTRICTION:
+- You are EXCLUSIVELY a Travel & Tourism Assistant.
+- You must ONLY answer questions directly related to travel, destinations, itineraries, places to visit, hotels, flights, local food, culture, packing, weather, travel budgets, sightseeing, and geography.
+- If the user asks ANY question that is NOT related to travel (e.g. iPhone or smartphone prices, electronic gadgets, programming/coding, mathematics, crypto, medical advice, celebrity gossip, or general trivia unrelated to travel), you MUST politely decline and steer them back to travel with a friendly response like:
+  "I'm Waylo, your dedicated AI travel companion! 🌍✈️ I can only help with travel-related topics like destination guides, trip planning, places to visit, flight/hotel tips, and local cultures. Where would you like to travel next? Let's plan a trip! 🌴🎒"
+- Do NOT answer non-travel questions (do NOT give iPhone prices, gadget specs, or non-travel advice).
+${currencyClause}
+
+FORMATTING INSTRUCTIONS:
+- Keep answers engaging, structured, and visually clean.
+- Use emojis 🌍✈️🌴 appropriately.
+- Use short, scannable paragraphs and bullet points.
+- Keep responses compact and fast to read. Avoid massive paragraphs.`;
+
+  const systemText = context?.name
+    ? `${baseRules}
+The user is currently viewing the destination page for ${context.name}, ${context.country}. Famous places here include: ${context.places}.`
+    : baseRules;
 
   if (groqApiKey) {
     const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -116,12 +135,12 @@ async function fallbackDirectGeminiCall(messages: ChatMessage[], context?: ChatC
 /**
  * Generates a structured JSON itinerary using the Netlify serverless function.
  */
-export async function generateItinerary(destination: string, days: number, preferences: string = ''): Promise<any> {
+export async function generateItinerary(destination: string, days: number, preferences: string = '', currency: string = 'INR (₹)'): Promise<any> {
   try {
     const response = await fetch('/.netlify/functions/itinerary', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ destination, days, preferences }),
+      body: JSON.stringify({ destination, days, preferences, currency }),
     });
 
     if (response.ok) {
@@ -130,20 +149,20 @@ export async function generateItinerary(destination: string, days: number, prefe
 
     if (response.status === 404) {
       console.warn('Serverless endpoint /.netlify/functions/itinerary not found. Falling back to direct Gemini API call.');
-      return await fallbackDirectItineraryCall(destination, days, preferences);
+      return await fallbackDirectItineraryCall(destination, days, preferences, currency);
     }
 
     throw new Error('Serverless request failed');
   } catch (error) {
     console.warn('Network error hitting Netlify function, falling back to direct Gemini API call.', error);
-    return await fallbackDirectItineraryCall(destination, days, preferences);
+    return await fallbackDirectItineraryCall(destination, days, preferences, currency);
   }
 }
 
 /**
  * Local development fallback for itinerary generation.
  */
-async function fallbackDirectItineraryCall(destination: string, days: number, preferences: string): Promise<any> {
+async function fallbackDirectItineraryCall(destination: string, days: number, preferences: string, currency: string = 'INR (₹)'): Promise<any> {
   const groqApiKey = import.meta.env.VITE_GROQ_API_KEY;
   const geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY;
   
@@ -151,6 +170,7 @@ async function fallbackDirectItineraryCall(destination: string, days: number, pr
 
   const systemText = `You are an expert travel planner. Create a highly curated ${days}-day itinerary for ${destination}. 
 User preferences: ${preferences || 'Show me the best highlights and local secrets.'}
+User preferred currency: ${currency}. Whenever mentioning estimated costs, ticket fees, taxi fares, or food prices in activity descriptions, ALWAYS quote them in ${currency}.
 
 You must respond ONLY with a valid JSON object strictly matching this exact structure:
 {

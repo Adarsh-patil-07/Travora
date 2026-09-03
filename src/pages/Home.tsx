@@ -44,7 +44,7 @@ export default function Home() {
       exit="exit"
       className="min-h-screen flex flex-col bg-[#FAFAF7] overflow-x-hidden"
     >
-      <div className="h-[100dvh] flex-shrink-0 w-full relative">
+      <div className="min-h-[100dvh] flex-shrink-0 w-full relative">
         <Hero />
       </div>
 

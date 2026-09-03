@@ -6,6 +6,8 @@ import {
 import ReactMarkdown from 'react-markdown';
 import { pageTransition } from '../lib/motion';
 import { sendMessageToWaylo } from '../services/ai';
+import { useAuth } from '../contexts/AuthContext';
+import { useCurrency } from '../contexts/CurrencyContext';
 import toast from 'react-hot-toast';
 import type { ChatMessage } from '../types';
 
@@ -17,6 +19,8 @@ const SUGGESTED_PROMPTS = [
 ];
 
 export default function Assistant() {
+  const { user } = useAuth();
+  const { currency } = useCurrency();
   const [inputText, setInputText] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -72,7 +76,10 @@ export default function Assistant() {
     setIsSending(true);
 
     try {
-      const responseText = await sendMessageToWaylo([...messages, newUserMsg]);
+      const responseText = await sendMessageToWaylo(
+        [...messages, newUserMsg],
+        { currency: `${currency.name}` }
+      );
       const newAiMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
@@ -195,14 +202,26 @@ export default function Assistant() {
                       className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
                       <div className={`flex gap-2.5 max-w-[85%] md:max-w-[75%] ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                        <div className={`w-7 h-7 md:w-8 md:h-8 shrink-0 rounded-full flex items-center justify-center overflow-hidden ${msg.role === 'user' ? 'bg-gray-200 text-gray-600' : 'bg-purple-100 text-purple-600'}`}>
-                          {msg.role === 'user' ? <User size={15} /> : <Sparkles size={15} />}
+                        <div className="w-7 h-7 md:w-8 md:h-8 shrink-0 rounded-full flex items-center justify-center overflow-hidden border border-gray-100 shadow-2xs">
+                          {msg.role === 'user' ? (
+                            user?.photoURL ? (
+                              <img src={user.photoURL} alt={user.displayName || 'User'} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full bg-gradient-to-tr from-purple-100 to-indigo-100 text-[#5538EE] font-bold text-xs flex items-center justify-center">
+                                {user?.displayName ? user.displayName.charAt(0).toUpperCase() : <User size={15} />}
+                              </div>
+                            )
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-tr from-[#5538EE] to-[#8C65F7] text-white flex items-center justify-center">
+                              <Sparkles size={14} className="text-amber-300" />
+                            </div>
+                          )}
                         </div>
-                        <div className={`px-3.5 py-2.5 rounded-2xl text-xs md:text-sm ${msg.role === 'user' ? 'bg-[#5538EE] text-white rounded-tr-xs shadow-xs font-medium' : 'bg-white border border-gray-200/80 shadow-xs text-gray-800 rounded-tl-xs'}`}>
+                        <div className={`px-4 py-3 rounded-2xl ${msg.role === 'user' ? 'text-[13.5px] md:text-sm bg-[#5538EE] text-white rounded-tr-xs shadow-xs font-medium' : 'text-[13.5px] md:text-sm bg-white border border-gray-200/80 shadow-xs text-gray-800 rounded-tl-xs leading-relaxed'}`}>
                           {msg.role === 'user' ? (
                             msg.content
                           ) : (
-                            <div className="prose prose-xs md:prose-sm max-w-none prose-p:leading-relaxed prose-headings:font-semibold prose-a:text-purple-600 prose-ul:my-1 prose-li:my-0">
+                            <div className="prose prose-sm max-w-none text-[13.5px] md:text-sm leading-relaxed prose-p:my-1.5 prose-p:leading-relaxed prose-headings:my-2 prose-headings:text-sm md:prose-headings:text-base prose-headings:font-bold prose-strong:text-gray-900 prose-a:text-purple-600 prose-ul:my-1 prose-li:my-0.5">
                               <ReactMarkdown>
                                 {msg.content}
                               </ReactMarkdown>

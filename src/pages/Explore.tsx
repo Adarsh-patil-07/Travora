@@ -36,7 +36,7 @@ function CustomSelect({ value, onChange, options, icon: Icon, placeholder }: Cus
   const selectedOption = options.find(o => o.value === value);
 
   return (
-    <div className="relative min-w-[130px] sm:min-w-[160px] md:min-w-[180px]" ref={ref}>
+    <div className="relative flex-1 md:flex-initial md:min-w-[160px] lg:min-w-[185px]" ref={ref}>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
@@ -154,7 +154,7 @@ export default function Explore() {
             />
           </div>
 
-          <div className="flex flex-row gap-2 md:gap-3">
+          <div className="flex flex-row gap-2 md:gap-3 w-full md:w-auto">
             {/* Continent Filter */}
             <CustomSelect
               value={selectedContinent}

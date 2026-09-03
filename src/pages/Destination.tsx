@@ -14,6 +14,7 @@ import { generateItinerary } from '../services/ai';
 import { pageTransition } from '../lib/motion';
 import type { Place } from '../types';
 import { useAuth } from '../contexts/AuthContext';
+import { useCurrency } from '../contexts/CurrencyContext';
 import { saveDestinationToDb, removeDestinationFromDb } from '../lib/db';
 import { useTravelImage } from '../hooks/useTravelImage';
 import { useWeather } from '../hooks/useWeather';
@@ -72,6 +73,7 @@ export default function Destination() {
   const { id } = useParams<{ id: string }>();
   const dest = destinations.find((d) => d.id === id);
   const { user, userData, refreshUserData } = useAuth();
+  const { currency } = useCurrency();
   const isSaved = userData?.savedDestinations.includes(dest?.id || '') || false;
 
   // States for AI Itinerary generation
@@ -87,7 +89,7 @@ export default function Destination() {
     setIsGenerating(true);
     const loadingToast = toast.loading('Generating custom itinerary...');
     try {
-      const data = await generateItinerary(dest.name, 3, 'must-see');
+      const data = await generateItinerary(dest.name, 3, 'must-see', `${currency.name}`);
       toast.success('Itinerary generated!', { id: loadingToast });
       navigate('/planner', { state: { itineraryData: data } });
     } catch (error) {
@@ -195,36 +197,39 @@ export default function Destination() {
 
             {/* Hero Right Content - Weather */}
             <div id="weather" className="hidden lg:flex w-full lg:w-1/2 justify-end items-center scroll-mt-32">
-              <div className="bg-black/40 backdrop-blur-xl border border-white/20 p-6 rounded-3xl text-white shadow-2xl w-80">
-                <div className="flex items-center gap-2 mb-6 text-white/80 text-sm font-medium">
+              <div className="bg-black/10 hover:bg-black/15 backdrop-blur-md border border-white/10 p-6 md:p-7 rounded-[2rem] text-white shadow-xl transition-all duration-300 w-80">
+                <div className="flex items-center gap-2 mb-4 text-white/90 text-sm font-medium">
                   <MapPin size={16} />
                   <span>Current weather in {dest.name}</span>
-                  <span className="ml-auto w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <div className="ml-auto flex items-center gap-1.5 bg-emerald-500/15 px-2.5 py-0.5 rounded-full border border-emerald-400/30 backdrop-blur-sm">
+                    <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.9)]"></span>
+                    <span className="text-[8px] font-bold text-emerald-400 uppercase tracking-widest">Live</span>
+                  </div>
                 </div>
                 
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="text-5xl select-none">{weather?.icon || '☀️'}</div>
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="text-5xl select-none drop-shadow-md">{weather?.icon || '☀️'}</div>
                   <div>
-                    <div className="text-5xl font-light tracking-tighter">
-                      {weather?.temp ?? 26}<span className="text-3xl align-top">°C</span>
+                    <div className="text-4xl font-light tracking-tighter drop-shadow-sm text-white">
+                      {weather?.temp ?? 26}<span className="text-2xl align-top text-white/85">°C</span>
                     </div>
-                    <div className="text-sm font-medium">{weather?.condition || 'Sunny'}</div>
-                    <div className="text-xs text-white/70">Feels like {weather?.feelsLike ?? 28}°</div>
+                    <div className="text-xs font-medium text-white/90">{weather?.condition || 'Sunny'}</div>
+                    <div className="text-[10px] text-white/60 tracking-wide">Feels like {weather?.feelsLike ?? 28}°</div>
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-3 gap-4 border-t border-white/20 pt-4 pb-4 text-xs">
+                <div className="grid grid-cols-3 gap-2 border-t border-white/10 pt-3.5 text-xs">
                   <div>
-                    <div className="text-white/70 mb-1">Humidity</div>
-                    <div className="font-medium">{weather?.humidity ?? 52}%</div>
+                    <div className="text-white/60 mb-0.5 tracking-wider uppercase text-[8px] font-bold">Humidity</div>
+                    <div className="font-semibold text-xs text-white/95">{weather?.humidity ?? 52}%</div>
                   </div>
                   <div>
-                    <div className="text-white/70 mb-1">Wind</div>
-                    <div className="font-medium">{weather?.windSpeed ?? 12} km/h</div>
+                    <div className="text-white/60 mb-0.5 tracking-wider uppercase text-[8px] font-bold">Wind</div>
+                    <div className="font-semibold text-xs text-white/95">{weather?.windSpeed ?? 12} km/h</div>
                   </div>
                   <div>
-                    <div className="text-white/70 mb-1">Visibility</div>
-                    <div className="font-medium">{weather?.visibility ?? 10} km</div>
+                    <div className="text-white/60 mb-0.5 tracking-wider uppercase text-[8px] font-bold">Visibility</div>
+                    <div className="font-semibold text-xs text-white/95">{weather?.visibility ?? 10} km</div>
                   </div>
                 </div>
               </div>
@@ -240,7 +245,7 @@ export default function Destination() {
               <div className="flex items-center gap-6 md:gap-8">
                 <div className="flex items-center gap-2"><MapPin size={16} className="flex-shrink-0" /> {dest.coordinates.lat}° N, {dest.coordinates.lng}° E</div>
                 <div className="flex items-center gap-2"><Clock size={16} className="flex-shrink-0" /> Local Time</div>
-                <div className="flex items-center gap-2"><Banknote size={16} className="flex-shrink-0" /> Local Currency</div>
+                <div className="flex items-center gap-2"><Banknote size={16} className="flex-shrink-0 text-emerald-400" /> {currency.code} ({currency.symbol})</div>
                 <div className="flex items-center gap-2"><Languages size={16} className="flex-shrink-0" /> Primary Language</div>
               </div>
               <button 
@@ -330,11 +335,8 @@ export default function Destination() {
 
         {/* 4. PLACES TO VISIT */}
         <div id="places" className="scroll-mt-32">
-          <div className="flex justify-between items-end mb-8">
+          <div className="mb-8">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 font-instrument-serif tracking-tight">Places to visit</h2>
-            <button className="text-blue-600 font-medium text-sm flex items-center gap-1 hover:text-blue-700 transition-colors">
-              View all places <ChevronRight size={16} />
-            </button>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 pb-8">

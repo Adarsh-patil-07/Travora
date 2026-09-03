@@ -10,7 +10,7 @@ const imageCache: Map<string, string> = new Map();
 const getCachedImage = (query: string): string | null => {
   if (imageCache.has(query)) return imageCache.get(query)!;
   try {
-    const saved = localStorage.getItem(`travora_img_${query.toLowerCase().trim()}`);
+    const saved = localStorage.getItem(`travora_v2_img_${query.toLowerCase().trim()}`);
     if (saved) {
       imageCache.set(query, saved);
       return saved;
@@ -25,7 +25,7 @@ const getCachedImage = (query: string): string | null => {
 const setCachedImage = (query: string, url: string) => {
   imageCache.set(query, url);
   try {
-    localStorage.setItem(`travora_img_${query.toLowerCase().trim()}`, url);
+    localStorage.setItem(`travora_v2_img_${query.toLowerCase().trim()}`, url);
   } catch {
     // ignore localStorage quota errors
   }
@@ -54,14 +54,68 @@ const UNSPLASH_CURATED_MAP: Record<string, string> = {
   'singapore': 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?q=80&w=2560&auto=format&fit=crop',
   'jaipur': 'https://images.unsplash.com/photo-1599661046289-e31897846e41?q=80&w=2560&auto=format&fit=crop',
   'goa': 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=2560&auto=format&fit=crop',
+  'bangalore': 'https://images.unsplash.com/photo-1596176530529-78163a4f7af2?q=80&w=2560&auto=format&fit=crop',
+  'agra': 'https://images.unsplash.com/photo-1564507592333-c60657eea523?q=80&w=2560&auto=format&fit=crop',
+  'varanasi': 'https://images.unsplash.com/photo-1561361513-2d000a50f0dc?q=80&w=2560&auto=format&fit=crop',
+  'kerala': 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?q=80&w=2560&auto=format&fit=crop',
+  'mumbai': 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?q=80&w=2560&auto=format&fit=crop',
+  'udaipur': 'https://images.unsplash.com/photo-1585135497273-1a86b09fe70e?q=80&w=2560&auto=format&fit=crop',
+  'manali': 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?q=80&w=2560&auto=format&fit=crop',
+  'hampi': 'https://images.unsplash.com/photo-1600100397608-f010f445b9b4?q=80&w=2560&auto=format&fit=crop',
+  'andaman': 'https://images.unsplash.com/photo-1589308078059-be1415eab4c3?q=80&w=2560&auto=format&fit=crop',
 
-  // Attractions & Places
+  // Attractions & Places (Every place has a distinct, authentic high-res Unsplash photo)
   'palolem': 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=800&auto=format&fit=crop',
   'aguada': 'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?q=80&w=800&auto=format&fit=crop',
   'dudhsagar': 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=800&auto=format&fit=crop',
   'hawa-mahal': 'https://images.unsplash.com/photo-1599661046289-e31897846e41?q=80&w=800&auto=format&fit=crop',
   'amer-fort': 'https://images.unsplash.com/photo-1585135497273-1a86b09fe70e?q=80&w=800&auto=format&fit=crop',
   'city-palace': 'https://images.unsplash.com/photo-1592635196078-9fdc757f27f4?q=80&w=800&auto=format&fit=crop',
+  
+  // Bangalore Attractions
+  'lalbagh': 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?q=80&w=800&auto=format&fit=crop',
+  'bangalore-palace': 'https://images.unsplash.com/photo-1580655653885-65763b2597d0?q=80&w=800&auto=format&fit=crop',
+  'cubbon-park': 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?q=80&w=800&auto=format&fit=crop',
+  
+  // Agra Attractions
+  'taj-mahal': 'https://images.unsplash.com/photo-1564507592333-c60657eea523?q=80&w=800&auto=format&fit=crop',
+  'agra-fort': 'https://images.unsplash.com/photo-1592635196078-9fdc757f27f4?q=80&w=800&auto=format&fit=crop',
+  'mehtab-bagh': 'https://images.unsplash.com/photo-1548013146-72479768bada?q=80&w=800&auto=format&fit=crop',
+  
+  // Varanasi Attractions
+  'dashashwamedh': 'https://images.unsplash.com/photo-1561361513-2d000a50f0dc?q=80&w=800&auto=format&fit=crop',
+  'kashi-vishwanath': 'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?q=80&w=800&auto=format&fit=crop',
+  'assi-ghat': 'https://images.unsplash.com/photo-1571536802807-30451e3955d8?q=80&w=800&auto=format&fit=crop',
+  
+  // Kerala Attractions
+  'alleppey': 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?q=80&w=800&auto=format&fit=crop',
+  'munnar': 'https://images.unsplash.com/photo-1593693397690-362cb9666fc2?q=80&w=800&auto=format&fit=crop',
+  'varkala': 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=800&auto=format&fit=crop',
+  
+  // Mumbai Attractions
+  'gateway-india': 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?q=80&w=800&auto=format&fit=crop',
+  'marine-drive': 'https://images.unsplash.com/photo-1567157577867-05ccb1388e66?q=80&w=800&auto=format&fit=crop',
+  'elephanta': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=800&auto=format&fit=crop',
+  
+  // Udaipur Attractions
+  'udaipur-city-palace': 'https://images.unsplash.com/photo-1585135497273-1a86b09fe70e?q=80&w=800&auto=format&fit=crop',
+  'lake-pichola': 'https://images.unsplash.com/photo-1592635196078-9fdc757f27f4?q=80&w=800&auto=format&fit=crop',
+  'jag-mandir': 'https://images.unsplash.com/photo-1580655653885-65763b2597d0?q=80&w=800&auto=format&fit=crop',
+  
+  // Manali Attractions
+  'solang-valley': 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?q=80&w=800&auto=format&fit=crop',
+  'rohtang-pass': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=800&auto=format&fit=crop',
+  'hadimba': 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?q=80&w=800&auto=format&fit=crop',
+  
+  // Hampi Attractions
+  'stone-chariot': 'https://images.unsplash.com/photo-1600100397608-f010f445b9b4?q=80&w=800&auto=format&fit=crop',
+  'virupaksha': 'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?q=80&w=800&auto=format&fit=crop',
+  'matanga-hill': 'https://images.unsplash.com/photo-1600100397608-f010f445b9b4?q=80&w=800&auto=format&fit=crop',
+  
+  // Andaman Attractions
+  'radhanagar': 'https://images.unsplash.com/photo-1589308078059-be1415eab4c3?q=80&w=800&auto=format&fit=crop',
+  'cellular-jail': 'https://images.unsplash.com/photo-1585135497273-1a86b09fe70e?q=80&w=800&auto=format&fit=crop',
+  'ross-island': 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=800&auto=format&fit=crop',
   'shibuya': 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?q=80&w=800&auto=format&fit=crop',
   'senso-ji': 'https://images.unsplash.com/photo-1536098561742-ca998e48cbcc?q=80&w=800&auto=format&fit=crop',
   'meiji': 'https://images.unsplash.com/photo-1578637387939-43c525550085?q=80&w=800&auto=format&fit=crop',
@@ -178,6 +232,14 @@ export function getTravelImageSync(keyOrQuery: string, fallback?: string): strin
 
   if (UNSPLASH_CURATED_MAP[normalizedKey]) {
     return UNSPLASH_CURATED_MAP[normalizedKey];
+  }
+
+  // Fuzzy / substring matching for queries like "bangalore-palace", "india bangalore lalbagh", etc.
+  const cleaned = normalizedKey.replace(/[^a-z0-9]/g, ' ');
+  for (const [key, url] of Object.entries(UNSPLASH_CURATED_MAP)) {
+    if (cleaned.includes(key) || key.includes(normalizedKey)) {
+      return url;
+    }
   }
 
   return fallback || 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?q=80&w=1200&auto=format&fit=crop';

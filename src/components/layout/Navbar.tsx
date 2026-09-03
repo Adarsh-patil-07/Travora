@@ -11,10 +11,11 @@ export default function Navbar() {
   const isHome = location.pathname === '/';
   const isDestination = location.pathname.startsWith('/destination');
   
-  // The navbar should be white text when at the top of the Home or Destination pages
-  // because both have dark image hero sections.
-  const isLight = (isHome || isDestination) && !scrolled;
-  const textColor = isLight ? 'text-white' : 'text-[#111111]';
+  const isDarkHeroPage = isHome || isDestination;
+  const isLight = isDarkHeroPage && !scrolled;
+  const textColor = isDarkHeroPage
+    ? (scrolled ? 'text-white md:text-[#111111]' : 'text-white')
+    : 'text-[#111111]';
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
@@ -27,7 +28,7 @@ export default function Navbar() {
     <header
       className={`absolute md:fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
         scrolled
-          ? 'bg-white/95 backdrop-blur-md border-b border-[#E5E3DD] py-2.5 shadow-xs'
+          ? 'bg-transparent md:bg-white/95 md:backdrop-blur-md md:border-b md:border-[#E5E3DD] py-3 md:py-2.5 md:shadow-xs'
           : 'bg-transparent py-3 md:py-4'
       }`}
     >
@@ -36,11 +37,11 @@ export default function Navbar() {
         aria-label="Main navigation"
       >
         {/* Brand - with comfortable left margin aligned with page layout */}
-        <Link to="/" className={`flex items-start gap-2.5 transition-colors duration-300 shrink-0 ${textColor}`}>
-          <Navigation className="text-accent fill-accent -rotate-45 mt-0.5 w-5 h-5 md:w-6 md:h-6" />
-          <div className="flex flex-col">
-            <span className="text-lg md:text-xl font-bold leading-none tracking-tight">Travora</span>
-            <span className="text-[0.6rem] md:text-[0.65rem] opacity-70 mt-1 tracking-widest uppercase font-semibold">Discover. Plan. Go.</span>
+        <Link to="/" className={`flex items-center gap-2.5 transition-colors duration-300 shrink-0 ${textColor}`}>
+          <Navigation className="text-accent fill-accent -rotate-45 w-5 h-5 md:w-6 md:h-6 shrink-0" />
+          <div className="flex flex-col justify-center">
+            <span className="text-lg md:text-xl font-bold leading-tight tracking-tight">Travora</span>
+            <span className="text-[0.6rem] md:text-[0.65rem] opacity-70 tracking-widest uppercase font-semibold">Discover. Plan. Go.</span>
           </div>
         </Link>
 
@@ -57,16 +58,16 @@ export default function Navbar() {
           </Link>
 
           <Link 
-            to="/planner" 
-            className={`transition-colors py-1.5 border-b-2 ${location.pathname === '/planner' ? 'border-accent text-accent' : 'border-transparent hover:text-accent'}`}
-          >
-            Trip Planner
-          </Link>
-          <Link 
             to="/assistant" 
             className={`transition-colors py-1.5 border-b-2 ${location.pathname === '/assistant' ? 'border-accent text-accent' : 'border-transparent hover:text-accent'}`}
           >
             AI Assistant
+          </Link>
+          <Link 
+            to="/planner" 
+            className={`transition-colors py-1.5 border-b-2 ${location.pathname === '/planner' ? 'border-accent text-accent' : 'border-transparent hover:text-accent'}`}
+          >
+            Trip Planner
           </Link>
         </div>
 

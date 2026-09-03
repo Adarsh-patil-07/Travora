@@ -10,6 +10,7 @@ import MobileBottomNav from './components/layout/MobileBottomNav';
 import ScrollToTop from './components/layout/ScrollToTop';
 import ChatAssistant from './components/features/ChatAssistant';
 import { AuthProvider } from './contexts/AuthContext';
+import { CurrencyProvider } from './contexts/CurrencyContext';
 
 // Route-level Code Splitting for optimal initial page load speed
 const Home = lazy(() => import('./pages/Home'));
@@ -69,23 +70,39 @@ function MainLayout() {
       </div>
 
       {/* Global Elements */}
-      {location.pathname === '/profile' && <Footer />}
+      {location.pathname === '/' && <Footer />}
       {!isAssistant && <ChatAssistant />}
       <MobileBottomNav />
       <Toaster 
         position="bottom-center"
         toastOptions={{
           style: {
-            background: '#222222',
-            color: '#fff',
+            background: 'linear-gradient(135deg, rgba(27, 20, 60, 0.95) 0%, rgba(44, 28, 98, 0.92) 100%)',
+            color: '#FAFAF7',
+            border: '1px solid rgba(140, 101, 247, 0.35)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
             borderRadius: '9999px',
-            fontSize: '14px',
-            fontWeight: '500',
-            padding: '12px 24px',
-            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
-            marginBottom: '80px',
+            fontSize: '13.5px',
+            fontWeight: '600',
+            padding: '10px 22px',
+            boxShadow: '0 16px 36px -4px rgba(85, 56, 238, 0.35), 0 6px 16px -2px rgba(0, 0, 0, 0.3)',
+            marginBottom: '84px',
+            letterSpacing: '0.01em',
           },
-          duration: 4000,
+          success: {
+            iconTheme: {
+              primary: '#10B981',
+              secondary: '#FFFFFF',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: '#EF4444',
+              secondary: '#FFFFFF',
+            },
+          },
+          duration: 3500,
         }}
       />
     </div>
@@ -97,10 +114,12 @@ export default function App() {
   return (
     <HelmetProvider>
       <AuthProvider>
-        <BrowserRouter>
-          <ScrollToTop />
-          <MainLayout />
-        </BrowserRouter>
+        <CurrencyProvider>
+          <BrowserRouter>
+            <ScrollToTop />
+            <MainLayout />
+          </BrowserRouter>
+        </CurrencyProvider>
       </AuthProvider>
     </HelmetProvider>
   );

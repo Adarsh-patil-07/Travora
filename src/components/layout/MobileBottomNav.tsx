@@ -34,13 +34,13 @@ export default function MobileBottomNav() {
   const navItems = [
     { name: 'Home', path: '/', icon: Home },
     { name: 'Explore', path: '/explore', icon: Compass },
-    { name: 'Planner', path: '/planner', icon: Calendar },
     { name: 'Assistant', path: '/assistant', icon: Sparkles },
+    { name: 'Planner', path: '/planner', icon: Calendar },
     { name: 'Profile', path: '/profile', icon: User },
   ];
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-[#E5E3DD] z-[60] px-1 pt-1.5 pb-[calc(0.25rem+env(safe-area-inset-bottom))] shadow-[0_-10px_40px_rgba(0,0,0,0.08)]">
+    <nav className="md:hidden fixed bottom-3 sm:bottom-4 inset-x-4 sm:inset-x-8 max-w-sm mx-auto rounded-[22px] bg-white/60 hover:bg-white/70 backdrop-blur-2xl backdrop-saturate-200 border border-white/45 ring-1 ring-black/[0.04] z-[60] px-2 py-1 shadow-[0_12px_36px_-4px_rgba(0,0,0,0.16),0_4px_12px_rgba(0,0,0,0.06),inset_0_1px_1px_rgba(255,255,255,0.9)] transition-all duration-300">
       <div className="flex justify-around items-center">
         {navItems.map((item) => {
           const isActive = path === item.path || (item.path !== '/' && path.startsWith(item.path));
@@ -49,18 +49,18 @@ export default function MobileBottomNav() {
             <Link
               key={item.name}
               to={item.path}
-              className={`flex flex-col items-center justify-center w-[4.5rem] gap-0.5 p-1 rounded-xl transition-all ${
-                isActive ? 'text-accent' : 'text-[#999999] hover:text-[#666666]'
+              className={`flex flex-col items-center justify-center w-14 gap-0.5 py-0.5 rounded-full transition-all ${
+                isActive ? 'text-[#E8890C]' : 'text-gray-700 hover:text-gray-950'
               }`}
             >
-              <div className={`p-1 rounded-full transition-colors ${isActive ? 'bg-accent/10' : 'bg-transparent'}`}>
+              <div className={`p-1 rounded-full transition-all ${isActive ? 'bg-[#E8890C]/15' : 'bg-transparent'}`}>
                 {item.name === 'Profile' && user?.photoURL ? (
-                  <img src={user.photoURL} alt="Profile" referrerPolicy="no-referrer" className={`w-[22px] h-[22px] rounded-full object-cover ${isActive ? 'ring-2 ring-accent ring-offset-1' : ''}`} />
+                  <img src={user.photoURL} alt="Profile" referrerPolicy="no-referrer" className={`w-[20px] h-[20px] rounded-full object-cover ${isActive ? 'ring-2 ring-[#E8890C] ring-offset-1 ring-offset-white' : 'border border-gray-400'}`} />
                 ) : (
-                  <Icon size={22} className={isActive ? 'stroke-accent stroke-[2.5px]' : 'stroke-[1.75px]'} />
+                  <Icon size={19} className={isActive ? 'stroke-[#E8890C] stroke-[2.2px]' : 'stroke-gray-700 stroke-[1.85px]'} />
                 )}
               </div>
-              <span className={`text-[10px] font-semibold tracking-wide ${isActive ? 'text-accent' : ''}`}>
+              <span className={`text-[10px] tracking-tight leading-none ${isActive ? 'font-bold text-[#E8890C]' : 'font-semibold text-gray-700'}`}>
                 {item.name}
               </span>
             </Link>

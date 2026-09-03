@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
-  User, Settings, LogOut, MapPin, Heart, Globe, ChevronDown, Trash2, ArrowRight, Sparkles, Calendar, Compass
+  User, Settings, LogOut, MapPin, Heart, Globe, ChevronDown, Trash2, ArrowRight, Sparkles, Calendar, Compass, Check
 } from 'lucide-react';
 import { pageTransition, fadeInUp, staggerContainer } from '../lib/motion';
 import { destinations } from '../data/destinations';
 import { getTravelImageSync } from '../services/images';
 import { useAuth } from '../contexts/AuthContext';
+import { useCurrency, CURRENCIES } from '../contexts/CurrencyContext';
 import { removeDestinationFromDb, removeTripFromDb } from '../lib/db';
 import toast from 'react-hot-toast';
 
@@ -31,8 +32,10 @@ function getInitialLanguage() {
 
 export default function Profile() {
   const { user, userData, signInWithGoogle, logout, refreshUserData } = useAuth();
+  const { currency: currentCurrency, setCurrency } = useCurrency();
   const [activeTab, setActiveTab] = useState<'favorites' | 'trips' | 'settings'>('favorites');
   const [isLangOpen, setIsLangOpen] = useState(false);
+  const [isCurrencyOpen, setIsCurrencyOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState(getInitialLanguage());
   const navigate = useNavigate();
 
@@ -55,6 +58,12 @@ export default function Profile() {
     }
     
     window.location.reload();
+  };
+
+  const handleCurrencyChange = (curr: typeof CURRENCIES[0]) => {
+    setCurrency(curr);
+    setIsCurrencyOpen(false);
+    toast.success(`Currency set to ${curr.code} (${curr.symbol})`);
   };
 
   const handleAuth = async () => {
@@ -101,8 +110,8 @@ export default function Profile() {
       exit="exit"
       className="w-full bg-[#FAFAF7] min-h-screen flex-1 flex flex-col pt-16 md:pt-[72px]"
     >
-      {/* Cover Banner */}
-      <div className="w-full h-40 md:h-72 lg:h-[340px] relative overflow-hidden bg-gray-900">
+      {/* Cover Banner - Hidden on mobile, visible on tablet/desktop */}
+      <div className="hidden md:block w-full h-72 lg:h-[340px] relative overflow-hidden bg-gray-900">
         <img 
           src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2560&auto=format&fit=crop" 
           alt="Cover" 
@@ -112,41 +121,65 @@ export default function Profile() {
       </div>
 
       {/* Main Content Container */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full -mt-24 md:-mt-36 relative z-10 pb-20">
-        <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="flex flex-col md:flex-row gap-4 md:gap-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-4 md:-mt-48 lg:-mt-56 relative z-10 pb-20">
+        <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="flex flex-col md:flex-row gap-4 md:gap-8 items-start">
           
           {/* Left Column: User Card */}
-          <div className="w-full md:w-1/3 lg:w-1/4 flex flex-col gap-4 md:gap-6">
-            <motion.div variants={fadeInUp} className="bg-white rounded-3xl p-5 md:p-6 shadow-sm border border-gray-100 flex flex-col items-center text-center relative overflow-hidden">
-              
-              {/* Profile Avatar */}
-              <div className="relative mb-3 md:mb-4">
-                {user && user.photoURL ? (
-                  <img src={user.photoURL} alt="Profile" referrerPolicy="no-referrer" className="w-20 h-20 md:w-32 md:h-32 rounded-full border-4 border-white shadow-md object-cover bg-white" />
-                ) : (
-                  <div className="w-20 h-20 md:w-32 md:h-32 bg-gray-100 rounded-full flex items-center justify-center border-4 border-white shadow-md">
-                    <User size={48} className="text-gray-400" />
-                  </div>
-                )}
-              </div>
-              
-              {/* User Info */}
+          <div className="w-full md:w-1/3 lg:w-1/4 flex flex-col gap-4 md:gap-6 sticky top-24">
+            <motion.div variants={fadeInUp} className="relative overflow-hidden rounded-2xl md:rounded-3xl p-4 sm:p-5 md:p-6 bg-gradient-to-br from-white via-[#FCFBFE] to-[#F7F5FF] text-gray-900 border border-purple-100/90 shadow-[0_10px_30px_-10px_rgba(85,56,238,0.12),0_2px_8px_rgba(0,0,0,0.04)]">
+              {/* Subtle Ambient Light Shimmer */}
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-purple-200/30 rounded-full blur-2xl pointer-events-none" />
+              <div className="absolute -bottom-10 -left-10 w-28 h-28 bg-pink-100/40 rounded-full blur-2xl pointer-events-none" />
+
               {user ? (
-                <div className="w-full">
-                  <h1 className="text-lg md:text-2xl font-bold text-gray-900 mb-0.5 md:mb-1">{user.displayName || 'Travora Explorer'}</h1>
-                  <p className="text-gray-500 text-xs md:text-sm mb-4 md:mb-6 truncate px-2">{user.email}</p>
-                  
-                  <button onClick={logout} className="w-full flex items-center justify-center gap-2 p-2.5 md:p-3 bg-red-50 rounded-xl border border-red-100 hover:bg-red-100 transition-colors text-red-600 text-sm font-semibold cursor-pointer">
-                    <LogOut size={16} />
-                    Sign Out
-                  </button>
+                <div className="relative z-10 flex flex-row md:flex-col items-center md:items-center gap-3.5 sm:gap-4 md:gap-0">
+                  {/* Profile Avatar with Radiant Ring */}
+                  <div className="shrink-0 md:mb-3.5 p-[2px] rounded-full bg-gradient-to-tr from-[#5538EE] via-pink-400 to-amber-300 shadow-sm">
+                    {user.photoURL ? (
+                      <img 
+                        src={user.photoURL} 
+                        alt="Profile" 
+                        referrerPolicy="no-referrer" 
+                        className="w-14 h-14 sm:w-16 sm:h-16 md:w-28 md:h-28 rounded-full object-cover bg-white border border-white" 
+                      />
+                    ) : (
+                      <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-28 md:h-28 bg-gradient-to-tr from-purple-100 to-indigo-100 text-[#5538EE] rounded-full flex items-center justify-center font-bold text-lg md:text-3xl border border-white">
+                        {user.displayName ? user.displayName.charAt(0).toUpperCase() : <User size={24} className="text-purple-600 md:w-12 md:h-12" />}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* User Info & Actions to the right of avatar on mobile */}
+                  <div className="min-w-0 flex-1 md:w-full md:text-center">
+                    <div className="hidden md:inline-flex items-center gap-1 bg-purple-50 text-purple-700 border border-purple-200/70 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold tracking-wider uppercase mb-2">
+                      <Sparkles size={10} className="text-purple-600" /> Explorer
+                    </div>
+                    
+                    <h1 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 tracking-tight leading-tight truncate">
+                      {user.displayName || 'Travora Explorer'}
+                    </h1>
+                    <p className="text-gray-500 text-xs sm:text-[13px] mt-0.5 md:mb-4 truncate font-medium">
+                      {user.email}
+                    </p>
+                    
+                    <button 
+                      onClick={logout} 
+                      className="mt-2.5 md:mt-0 inline-flex md:w-full items-center justify-center gap-1.5 px-3.5 py-1.5 md:py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200/80 rounded-xl text-xs md:text-sm font-semibold transition-colors cursor-pointer shadow-2xs"
+                    >
+                      <LogOut size={13} className="md:w-4 md:h-4 text-rose-500" />
+                      Sign Out
+                    </button>
+                  </div>
                 </div>
               ) : (
-                <div className="w-full">
-                  <h1 className="text-lg md:text-2xl font-bold text-gray-900 mb-2">Welcome</h1>
-                  <p className="text-gray-500 text-xs mb-4 md:mb-6">Sign in to save your favorite destinations and plan trips.</p>
-                  <button onClick={handleAuth} className="w-full p-2.5 md:p-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors text-sm shadow-sm flex items-center justify-center gap-2 cursor-pointer">
-                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                <div className="relative z-10 flex flex-col items-center text-center w-full">
+                  <div className="w-14 h-14 md:w-24 md:h-24 bg-purple-50 rounded-full flex items-center justify-center mb-3 border border-purple-100 shadow-sm text-purple-600">
+                    <User size={26} className="md:w-10 md:h-10" />
+                  </div>
+                  <h1 className="text-base md:text-xl font-bold text-gray-900 mb-1">Welcome Explorer</h1>
+                  <p className="text-gray-500 text-xs mb-3 md:mb-5">Sign in to save your favorite destinations and plan trips.</p>
+                  <button onClick={handleAuth} className="w-full p-2.5 md:p-3 bg-[#5538EE] hover:bg-[#472ED4] text-white font-semibold rounded-xl transition-all text-xs md:text-sm shadow-md flex items-center justify-center gap-2 cursor-pointer">
+                    <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
                     Sign in with Google
                   </button>
                 </div>
@@ -155,7 +188,7 @@ export default function Profile() {
           </div>
 
           {/* Right Column: Content Areas */}
-          <div className="w-full md:w-2/3 lg:w-3/4 flex flex-col gap-4 md:gap-6 md:mt-24">
+          <div className="w-full md:w-2/3 lg:w-3/4 flex flex-col gap-4 md:gap-6">
             
             {/* Navigation Tabs */}
             {user && (
@@ -352,18 +385,19 @@ export default function Profile() {
                   </h3>
                 </div>
                 
-                <div className="p-4 md:p-6">
-                  <div className="relative max-w-sm">
+                <div className="p-4 md:p-6 grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+                  {/* Display Language */}
+                  <div className="relative">
                     <label className="block text-[10px] md:text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Display Language</label>
                     <button 
-                      onClick={() => setIsLangOpen(!isLangOpen)}
+                      onClick={() => { setIsLangOpen(!isLangOpen); setIsCurrencyOpen(false); }}
                       className="w-full flex items-center justify-between p-3 sm:p-4 bg-gray-50 rounded-xl sm:rounded-2xl border border-gray-200 hover:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all cursor-pointer"
                     >
-                      <div className="flex items-center gap-2.5">
-                        <Globe size={16} className="text-blue-500" />
-                        <span className="font-medium text-xs sm:text-sm text-gray-900">{currentLang.name}</span>
+                      <div className="flex items-center gap-2.5 truncate">
+                        <Globe size={16} className="text-blue-500 shrink-0" />
+                        <span className="font-medium text-xs sm:text-sm text-gray-900 truncate">{currentLang.name}</span>
                       </div>
-                      <ChevronDown size={14} className={`text-gray-400 transition-transform duration-200 ${isLangOpen ? 'rotate-180' : ''}`} />
+                      <ChevronDown size={14} className={`text-gray-400 shrink-0 transition-transform duration-200 ${isLangOpen ? 'rotate-180' : ''}`} />
                     </button>
 
                     <AnimatePresence>
@@ -373,7 +407,7 @@ export default function Profile() {
                           animate={{ opacity: 1, y: 0, scale: 1 }}
                           exit={{ opacity: 0, y: -5, scale: 0.95 }}
                           transition={{ duration: 0.15 }}
-                          className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden py-2 z-20"
+                          className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden py-2 z-30 max-h-60 overflow-y-auto no-scrollbar"
                         >
                           {LANGUAGES.map((lang) => (
                             <button
@@ -387,6 +421,53 @@ export default function Profile() {
                             >
                               <span className="text-xs sm:text-sm">{lang.name}</span>
                               <span className="text-[10px] uppercase font-bold opacity-50 ml-3">{lang.display}</span>
+                            </button>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Preferred Currency */}
+                  <div className="relative">
+                    <label className="block text-[10px] md:text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Preferred Currency</label>
+                    <button 
+                      onClick={() => { setIsCurrencyOpen(!isCurrencyOpen); setIsLangOpen(false); }}
+                      className="w-full flex items-center justify-between p-3 sm:p-4 bg-gray-50 rounded-xl sm:rounded-2xl border border-gray-200 hover:border-emerald-400 focus:ring-4 focus:ring-emerald-50 transition-all cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2.5 truncate">
+                        <span className="text-base select-none shrink-0">{currentCurrency.flag}</span>
+                        <span className="font-medium text-xs sm:text-sm text-gray-900 truncate">{currentCurrency.name}</span>
+                      </div>
+                      <ChevronDown size={14} className={`text-gray-400 shrink-0 transition-transform duration-200 ${isCurrencyOpen ? 'rotate-180' : ''}`} />
+                    </button>
+
+                    <AnimatePresence>
+                      {isCurrencyOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -5, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: -5, scale: 0.95 }}
+                          transition={{ duration: 0.15 }}
+                          className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden py-2 z-30 max-h-60 overflow-y-auto no-scrollbar"
+                        >
+                          {CURRENCIES.map((curr) => (
+                            <button
+                              key={curr.code}
+                              onClick={() => handleCurrencyChange(curr)}
+                              className={`w-full text-left px-4 py-2.5 transition-colors flex items-center justify-between cursor-pointer ${
+                                currentCurrency.code === curr.code 
+                                  ? 'bg-emerald-50 text-emerald-700 font-semibold' 
+                                  : 'text-gray-700 hover:bg-gray-50'
+                              }`}
+                            >
+                              <div className="flex items-center gap-2">
+                                <span>{curr.flag}</span>
+                                <span className="text-xs sm:text-sm">{curr.name}</span>
+                              </div>
+                              {currentCurrency.code === curr.code && (
+                                <Check size={14} className="text-emerald-600 shrink-0" />
+                              )}
                             </button>
                           ))}
                         </motion.div>

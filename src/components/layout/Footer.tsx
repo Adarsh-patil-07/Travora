@@ -5,7 +5,7 @@
 export default function Footer() {
   return (
     <footer className="border-t border-[#E5E3DD] bg-[#FAFAFA]">
-      <div className="mx-auto max-w-[1920px] px-4 sm:px-6 lg:px-12 xl:px-16 pt-5 pb-[72px] md:pt-6 md:pb-6 text-center flex flex-col md:flex-row items-center justify-between gap-2 md:gap-4">
+      <div className="mx-auto max-w-[1920px] px-4 sm:px-6 lg:px-12 xl:px-16 pt-5 pb-24 md:pt-6 md:pb-6 text-center flex flex-col md:flex-row items-center justify-between gap-2 md:gap-4">
         {/* Brand and Tagline */}
         <div className="flex flex-col md:flex-row items-center md:gap-4">
           <p className="text-sm font-bold uppercase tracking-widest text-[#111111]">

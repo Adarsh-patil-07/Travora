@@ -7,6 +7,7 @@ import {
 import { pageTransition, fadeInUp } from '../lib/motion';
 import { generateItinerary } from '../services/ai';
 import { useAuth } from '../contexts/AuthContext';
+import { useCurrency } from '../contexts/CurrencyContext';
 import { saveTripToDb } from '../lib/db';
 import { destinations } from '../data/destinations';
 import { getTravelImageSync } from '../services/images';
@@ -96,6 +97,7 @@ const getActivityImage = (title: string, desc: string, index: number) => {
 export default function Planner() {
   const location = useLocation();
   const { user, userData, signInWithGoogle, refreshUserData } = useAuth();
+  const { currency } = useCurrency();
   const [itinerary, setItinerary] = useState<Itinerary | undefined>(location.state?.itineraryData);
   const [activeDay, setActiveDay] = useState(1);
   
@@ -151,7 +153,12 @@ export default function Planner() {
     setIsGenerating(true);
     const loadingId = toast.loading('Waylo is crafting your itinerary...');
     try {
-      const data = await generateItinerary(destInput.trim(), parseInt(daysInput) || 3, preferencesInput.trim());
+      const data = await generateItinerary(
+        destInput.trim(), 
+        parseInt(daysInput) || 3, 
+        preferencesInput.trim(),
+        `${currency.name}`
+      );
       setItinerary(data);
       setActiveDay(1);
       setIsModalOpen(false);
@@ -265,6 +272,17 @@ export default function Planner() {
                       className="w-full bg-gray-50 border border-gray-200/80 rounded-2xl py-3.5 pl-12 pr-4 text-sm md:text-base focus:bg-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                     />
                   </div>
+                </div>
+
+                {/* Active Currency Badge */}
+                <div className="flex items-center justify-between px-3.5 py-2.5 bg-purple-50/70 border border-purple-100/80 rounded-xl text-xs text-purple-800 font-medium">
+                  <span className="flex items-center gap-1.5">
+                    <span className="text-base select-none">{currency.flag}</span>
+                    <span>Estimates in <strong>{currency.name}</strong></span>
+                  </span>
+                  <Link to="/profile" className="text-purple-600 font-semibold underline hover:text-purple-800 text-[11px]">
+                    Change
+                  </Link>
                 </div>
 
                 <div className="pt-2 space-y-3">

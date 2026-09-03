@@ -6,10 +6,12 @@ import { useLocation } from 'react-router-dom';
 import { destinations } from '../../data/destinations';
 import { sendMessageToWaylo } from '../../services/ai';
 import { useAuth } from '../../contexts/AuthContext';
+import { useCurrency } from '../../contexts/CurrencyContext';
 import type { ChatMessage } from '../../types';
 
 export default function ChatAssistant() {
   const { user } = useAuth();
+  const { currency } = useCurrency();
   const [isOpen, setIsOpen] = useState(false);
   const firstName = user?.displayName ? user.displayName.split(' ')[0] : null;
 
@@ -33,11 +35,12 @@ Ask me for **custom itineraries**, **hidden gems**, **local food spots**, or tra
   const destMatch = location.pathname.match(/^\/destination\/(.+)$/);
   const currentDest = destMatch ? destinations.find(d => d.id === destMatch[1]) : null;
 
-  const chatContext = currentDest ? {
-    name: currentDest.name,
-    country: currentDest.country,
-    places: currentDest.famousPlaces.map(p => p.name).join(', ')
-  } : undefined;
+  const chatContext = {
+    name: currentDest?.name,
+    country: currentDest?.country,
+    places: currentDest?.famousPlaces?.map(p => p.name).join(', '),
+    currency: `${currency.name}`,
+  };
 
   // Auto scroll to bottom
   useEffect(() => {
@@ -214,16 +217,16 @@ Ask me for **custom itineraries**, **hidden gems**, **local food spots**, or tra
                       </div>
                     )}
                     <div 
-                      className={`max-w-[82%] rounded-2xl px-3.5 py-2.5 text-xs leading-relaxed ${
+                      className={`max-w-[84%] rounded-2xl ${
                         msg.role === 'user' 
-                          ? 'bg-[#5538EE] text-white rounded-tr-xs shadow-xs font-medium' 
-                          : 'bg-white text-gray-800 border border-gray-100 shadow-xs rounded-tl-xs'
+                          ? 'px-3.5 py-2.5 text-[13px] md:text-sm bg-[#5538EE] text-white rounded-tr-xs shadow-xs font-medium' 
+                          : 'px-3.5 py-2.5 text-[13px] md:text-sm bg-white text-gray-800 border border-gray-100 shadow-xs rounded-tl-xs leading-relaxed'
                       }`}
                     >
                       {msg.role === 'user' ? (
                         msg.content
                       ) : (
-                        <div className="prose prose-xs max-w-none prose-p:leading-relaxed prose-strong:text-gray-900 prose-a:text-purple-600 prose-ul:my-1 prose-li:my-0">
+                        <div className="prose prose-sm max-w-none text-[13px] md:text-sm leading-relaxed prose-p:my-1 prose-p:leading-relaxed prose-headings:my-1.5 prose-headings:text-sm prose-headings:font-bold prose-strong:text-gray-900 prose-a:text-purple-600 prose-ul:my-1 prose-li:my-0.5">
                           <ReactMarkdown>
                             {msg.content}
                           </ReactMarkdown>
@@ -231,9 +234,17 @@ Ask me for **custom itineraries**, **hidden gems**, **local food spots**, or tra
                       )}
                     </div>
                     {msg.role === 'user' && (
-                      <div className="w-7 h-7 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center shrink-0 mt-0.5">
-                        <User size={13} />
-                      </div>
+                      user?.photoURL ? (
+                        <img 
+                          src={user.photoURL} 
+                          alt={user.displayName || 'User'} 
+                          className="w-7 h-7 rounded-full object-cover shrink-0 mt-0.5 border border-purple-200 shadow-2xs" 
+                        />
+                      ) : (
+                        <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-purple-100 to-indigo-100 text-[#5538EE] flex items-center justify-center shrink-0 mt-0.5 border border-purple-200/60 font-bold text-[11px] shadow-2xs">
+                          {user?.displayName ? user.displayName.charAt(0).toUpperCase() : <User size={13} />}
+                        </div>
+                      )
                     )}
                   </div>
                 ))}
