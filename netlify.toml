@@ -1,0 +1,15 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+# Support for React Router (Single Page Application)
+# Redirects all paths to index.html so React Router handles the routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Serverless Functions Configuration
+[functions]
+  node_bundler = "esbuild"

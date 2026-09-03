@@ -1,0 +1,124 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* ===== Travora Design System ===== */
+
+/* Custom Theme Tokens */
+@theme {
+  --color-primary: #F7F6F2;
+  --color-surface: #FFFFFF;
+  --color-accent: #FFB800;
+  --color-accent-hover: #E6A600;
+  --color-text: #111111;
+  --color-text-muted: #6B6B6B;
+  --color-border: #E5E3DD;
+
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-instrument-serif: 'Instrument Serif', Georgia, serif;
+}
+
+/* ===== Base Styles ===== */
+
+
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Hide Google Translate UI */
+body {
+  top: 0 !important;
+}
+.VIpgJd-ZVi9od-ORHb-OEVmcd {
+  display: none !important;
+}
+.goog-te-banner-frame {
+  display: none !important;
+}
+#goog-gt-tt {
+  display: none !important;
+}
+.goog-text-highlight {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-primary);
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+/* ===== Typography Utilities ===== */
+
+.font-instrument-serif {
+  font-family: var(--font-instrument-serif);
+}
+
+/* ===== Focus States (Accessibility) ===== */
+
+*:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ===== Skip to Content (Accessibility) ===== */
+
+.skip-to-content {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--color-accent);
+  color: white;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 0 0 8px 0;
+}
+
+.skip-to-content:focus {
+  left: 0;
+}
+
+/* ===== Scrollbar Styling ===== */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+/* ===== Selection ===== */
+
+::selection {
+  background-color: var(--color-accent);
+  color: white;
+}
+
+/* Hide scrollbar for elements with the .no-scrollbar class */
+@layer utilities {
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
