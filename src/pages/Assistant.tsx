@@ -17,8 +17,10 @@ export default function Assistant() {
   const [destInput, setDestInput] = useState('');
   const [daysInput, setDaysInput] = useState('3');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const navigate = useNavigate();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -27,6 +29,27 @@ export default function Assistant() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Detect virtual keyboard open/close via visualViewport API
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    if (!viewport) return;
+
+    const handleResize = () => {
+      // If the visual viewport height is significantly less than the window height,
+      // the virtual keyboard is open
+      const keyboardOpen = viewport.height < window.innerHeight * 0.75;
+      setIsKeyboardOpen(keyboardOpen);
+    };
+
+    viewport.addEventListener('resize', handleResize);
+    viewport.addEventListener('scroll', handleResize);
+
+    return () => {
+      viewport.removeEventListener('resize', handleResize);
+      viewport.removeEventListener('scroll', handleResize);
+    };
+  }, []);
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,6 +72,11 @@ export default function Assistant() {
   const handleSendMessage = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!inputText.trim() || isSending) return;
+
+    // Blur input on mobile to dismiss keyboard after sending
+    if (window.innerWidth < 768) {
+      inputRef.current?.blur();
+    }
 
     const newUserMsg: ChatMessage = {
       id: Date.now().toString(),
@@ -92,7 +120,7 @@ export default function Assistant() {
       initial="initial"
       animate="animate"
       exit="exit"
-      className="flex h-[100dvh] pt-[76px] bg-white w-full overflow-hidden"
+      className="flex h-[100svh] pt-[76px] bg-white w-full overflow-hidden"
     >
       {/* LEFT SIDEBAR */}
       <div className="hidden lg:flex flex-col w-[360px] bg-[#FCFCFD] border-r border-gray-100 h-full flex-shrink-0 overflow-y-auto no-scrollbar">
@@ -135,55 +163,55 @@ export default function Assistant() {
       <div className="flex-1 flex flex-col h-full bg-white relative w-full max-w-full">
         {/* Chat Messages */}
         <div className="flex-1 overflow-y-auto p-4 md:p-8 no-scrollbar scroll-smooth">
-          <div className="flex flex-col items-center max-w-3xl mx-auto w-full h-full min-h-[40vh] pt-6 md:pt-8">
+          <div className="flex flex-col items-center max-w-3xl mx-auto w-full h-full pt-4 md:pt-8">
             
             {messages.length === 0 ? (
-              <div className="flex flex-col items-center justify-center w-full h-full my-auto">
+              <div className="flex flex-col items-center justify-center w-full flex-1">
                 {/* Mobile Centered Branding */}
-                <div className="lg:hidden flex flex-col items-center mb-6 md:mb-8">
-                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600 mb-2 md:mb-3 shadow-sm border border-purple-100">
-                    <Sparkles className="w-6 h-6 md:w-8 md:h-8" />
+                <div className="lg:hidden flex flex-col items-center mb-4 md:mb-8">
+                  <div className="w-10 h-10 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600 mb-2 md:mb-3 shadow-sm border border-purple-100">
+                    <Sparkles className="w-5 h-5 md:w-8 md:h-8" />
                   </div>
-                  <h2 className="font-bold text-gray-900 text-lg md:text-xl leading-none mb-1">Waylo</h2>
-                  <p className="text-[10px] md:text-xs text-gray-500 uppercase tracking-widest font-semibold">AI travel companion</p>
+                  <h2 className="font-bold text-gray-900 text-base md:text-xl leading-none mb-1">Waylo</h2>
+                  <p className="text-[9px] md:text-xs text-gray-500 uppercase tracking-widest font-semibold">AI travel companion</p>
                 </div>
 
-                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 md:mb-4 text-center tracking-tight">Generate an Itinerary</h3>
-                <p className="text-gray-500 text-sm md:text-base text-center max-w-lg leading-relaxed mb-8 md:mb-10">
+                <h3 className="text-xl md:text-3xl font-bold text-gray-900 mb-2 md:mb-4 text-center tracking-tight">Generate an Itinerary</h3>
+                <p className="text-gray-500 text-xs md:text-base text-center max-w-lg leading-relaxed mb-5 md:mb-10 px-2">
                   Tell me where you want to go and how many days you have, and I'll generate a comprehensive day-by-day plan. Or, just start chatting below!
                 </p>
                 
                 {/* Itinerary Generator Form */}
-                <form onSubmit={handleGenerate} className="w-full max-w-lg bg-white border border-gray-200 rounded-2xl md:rounded-3xl p-6 md:p-8 shadow-sm">
-                  <div className="mb-6">
-                    <label className="block text-xs md:text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2 md:mb-3">Destination</label>
+                <form onSubmit={handleGenerate} className="w-full max-w-lg bg-white border border-gray-200 rounded-2xl md:rounded-3xl p-4 md:p-8 shadow-sm">
+                  <div className="mb-4 md:mb-6">
+                    <label className="block text-[10px] md:text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1.5 md:mb-3">Destination</label>
                     <div className="relative">
-                      <Map size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <Map size={16} className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                       <input 
                         type="text" 
                         value={destInput}
                         onChange={e => setDestInput(e.target.value)}
                         placeholder="e.g. Paris, France" 
                         required
-                        className="w-full bg-gray-50 border-none rounded-xl py-3.5 md:py-4 pl-12 md:pl-14 pr-4 text-sm md:text-base focus:ring-2 focus:ring-purple-500 outline-none transition-shadow"
+                        className="w-full bg-gray-50 border-none rounded-xl py-3 md:py-4 pl-10 md:pl-14 pr-4 text-base focus:ring-2 focus:ring-purple-500 outline-none transition-shadow"
                       />
                     </div>
                   </div>
-                  <div className="mb-8">
-                    <label className="block text-xs md:text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2 md:mb-3">Duration (Days)</label>
+                  <div className="mb-5 md:mb-8">
+                    <label className="block text-[10px] md:text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1.5 md:mb-3">Duration (Days)</label>
                     <input 
                       type="number" 
                       min="1" max="14"
                       value={daysInput}
                       onChange={e => setDaysInput(e.target.value)}
                       required
-                      className="w-full bg-gray-50 border-none rounded-xl py-3.5 md:py-4 px-5 text-sm md:text-base focus:ring-2 focus:ring-purple-500 outline-none transition-shadow"
+                      className="w-full bg-gray-50 border-none rounded-xl py-3 md:py-4 px-4 md:px-5 text-base focus:ring-2 focus:ring-purple-500 outline-none transition-shadow"
                     />
                   </div>
                   <button 
                     type="submit" 
                     disabled={isGenerating}
-                    className="w-full bg-[#5538EE] hover:bg-[#4A2699] text-white rounded-xl py-4 md:py-4 text-sm md:text-base font-semibold flex items-center justify-center gap-2 transition-colors disabled:opacity-70"
+                    className="w-full bg-[#5538EE] hover:bg-[#4A2699] text-white rounded-xl py-3.5 md:py-4 text-sm md:text-base font-semibold flex items-center justify-center gap-2 transition-colors disabled:opacity-70"
                   >
                     {isGenerating ? (
                       <><Loader2 size={18} className="animate-spin" /> Generating Plan...</>
@@ -243,16 +271,17 @@ export default function Assistant() {
           </div>
         </div>
 
-        {/* Flex-based Input Area */}
-        <div className="flex-shrink-0 bg-white border-t border-gray-100 pt-4 pb-20 md:pb-6 px-4 md:px-8">
+        {/* Input Area — sticks above bottom nav, collapses padding when keyboard is open */}
+        <div className={`flex-shrink-0 bg-white border-t border-gray-100 pt-3 md:pt-4 px-3 md:px-8 transition-[padding] duration-200 ${isKeyboardOpen ? 'pb-2' : 'pb-[4.5rem] md:pb-6'}`}>
           <div className="max-w-3xl mx-auto">
-            <form onSubmit={handleSendMessage} className="bg-white border border-gray-200 rounded-3xl p-2 pl-4 pr-2 flex items-center shadow-sm focus-within:border-gray-300 focus-within:shadow-md transition-all">
+            <form onSubmit={handleSendMessage} className="bg-white border border-gray-200 rounded-2xl md:rounded-3xl p-1.5 md:p-2 pl-3 md:pl-4 pr-1.5 md:pr-2 flex items-center shadow-sm focus-within:border-gray-300 focus-within:shadow-md transition-all">
               <input 
+                ref={inputRef}
                 type="text" 
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 placeholder="Ask Waylo anything..." 
-                className="flex-1 bg-transparent border-none outline-none text-sm text-gray-700 placeholder:text-gray-400 py-1"
+                className="flex-1 bg-transparent border-none outline-none text-base text-gray-700 placeholder:text-gray-400 py-1 min-w-0"
                 disabled={isSending}
               />
               <div className="flex items-center gap-1 shrink-0">
@@ -265,9 +294,9 @@ export default function Assistant() {
                 <button 
                   type="submit" 
                   disabled={!inputText.trim() || isSending}
-                  className="w-10 h-10 ml-1 rounded-2xl bg-gray-900 hover:bg-gray-800 disabled:bg-gray-300 disabled:text-gray-500 text-white flex items-center justify-center transition-colors"
+                  className="w-9 h-9 md:w-10 md:h-10 ml-1 rounded-xl md:rounded-2xl bg-gray-900 hover:bg-gray-800 disabled:bg-gray-300 disabled:text-gray-500 text-white flex items-center justify-center transition-colors"
                 >
-                  {isSending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} className="ml-1" />}
+                  {isSending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} className="ml-0.5" />}
                 </button>
               </div>
             </form>

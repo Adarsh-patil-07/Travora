@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Compass, Calendar, Sparkles, User } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -6,6 +7,29 @@ export default function MobileBottomNav() {
   const { user } = useAuth();
   const location = useLocation();
   const path = location.pathname;
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+
+  // Detect virtual keyboard via visualViewport API
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    if (!viewport) return;
+
+    const handleResize = () => {
+      const keyboardOpen = viewport.height < window.innerHeight * 0.75;
+      setIsKeyboardOpen(keyboardOpen);
+    };
+
+    viewport.addEventListener('resize', handleResize);
+    viewport.addEventListener('scroll', handleResize);
+
+    return () => {
+      viewport.removeEventListener('resize', handleResize);
+      viewport.removeEventListener('scroll', handleResize);
+    };
+  }, []);
+
+  // Hide bottom nav when keyboard is open on mobile
+  if (isKeyboardOpen) return null;
 
   const navItems = [
     { name: 'Home', path: '/', icon: Home },
