@@ -1,24 +1,26 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
 import { 
-  Sparkles, Send, Map, Loader2, User, Plus, MessageSquare, Paperclip, Image as ImageIcon
+  Sparkles, Send, Loader2, User, Plus, MessageSquare, Paperclip, Image as ImageIcon, Compass, MapPin, Coffee, Utensils
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { pageTransition } from '../lib/motion';
-import { generateItinerary, sendMessageToWaylo } from '../services/ai';
+import { sendMessageToWaylo } from '../services/ai';
 import toast from 'react-hot-toast';
 import type { ChatMessage } from '../types';
 
+const SUGGESTED_PROMPTS = [
+  { icon: MapPin, text: 'Top 5 hidden gems in Tokyo' },
+  { icon: Compass, text: 'Best time to visit Bali and what to pack' },
+  { icon: Utensils, text: 'Must-try street foods in Rome' },
+  { icon: Coffee, text: 'Cute cafes and vintage spots in Paris' },
+];
+
 export default function Assistant() {
   const [inputText, setInputText] = useState('');
-  const [isGenerating, setIsGenerating] = useState(false);
   const [isSending, setIsSending] = useState(false);
-  const [destInput, setDestInput] = useState('');
-  const [daysInput, setDaysInput] = useState('3');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
-  const navigate = useNavigate();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -36,8 +38,6 @@ export default function Assistant() {
     if (!viewport) return;
 
     const handleResize = () => {
-      // If the visual viewport height is significantly less than the window height,
-      // the virtual keyboard is open
       const keyboardOpen = viewport.height < window.innerHeight * 0.75;
       setIsKeyboardOpen(keyboardOpen);
     };
@@ -51,27 +51,9 @@ export default function Assistant() {
     };
   }, []);
 
-  const handleGenerate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!destInput) return;
-    
-    setIsGenerating(true);
-    const loadingId = toast.loading('Crafting your itinerary...');
-    try {
-      const data = await generateItinerary(destInput, parseInt(daysInput) || 3, '');
-      toast.success('Itinerary generated!', { id: loadingId });
-      navigate('/planner', { state: { itineraryData: data } });
-    } catch (error) {
-      console.error(error);
-      toast.error(error instanceof Error ? error.message : 'Failed to generate itinerary', { id: loadingId });
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  const handleSendMessage = async (e?: React.FormEvent) => {
-    e?.preventDefault();
-    if (!inputText.trim() || isSending) return;
+  const handleSendMessage = async (textToSend?: string) => {
+    const query = typeof textToSend === 'string' ? textToSend.trim() : inputText.trim();
+    if (!query || isSending) return;
 
     // Blur input on mobile to dismiss keyboard after sending
     if (window.innerWidth < 768) {
@@ -81,7 +63,7 @@ export default function Assistant() {
     const newUserMsg: ChatMessage = {
       id: Date.now().toString(),
       role: 'user',
-      content: inputText.trim(),
+      content: query,
       timestamp: new Date()
     };
 
@@ -101,7 +83,6 @@ export default function Assistant() {
     } catch (error) {
       console.error(error);
       toast.error(error instanceof Error ? error.message : 'Failed to get response');
-      // Remove the user message if it failed
       setMessages(prev => prev.filter(m => m.id !== newUserMsg.id));
     } finally {
       setIsSending(false);
@@ -110,8 +91,7 @@ export default function Assistant() {
 
   const startNewConversation = () => {
     setMessages([]);
-    setDestInput('');
-    setDaysInput('3');
+    setInputText('');
   };
 
   return (
@@ -136,23 +116,19 @@ export default function Assistant() {
             </div>
           </div>
           
-          <button onClick={startNewConversation} className="w-full flex items-center justify-between px-5 py-3.5 rounded-full border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors mb-8 text-base font-medium">
-            <span className="flex items-center gap-3"><MessageSquare size={18} className="text-gray-400" /> New conversation</span>
-            <Plus size={18} className="text-gray-400" />
-          </button>
         </div>
 
         <div className="px-8 mb-8">
-          <h3 className="text-sm font-semibold text-gray-400 mb-5">Suggested</h3>
-          <ul className="space-y-5 text-base text-gray-600 font-medium">
-            {['Best time to visit Japan', 'Top places to see in Kyoto', 'What to eat in Tokyo?', 'Is Tokyo expensive?'].map((item, i) => (
+          <h3 className="text-sm font-semibold text-gray-400 mb-5">Suggested Topics</h3>
+          <ul className="space-y-4 text-base text-gray-600 font-medium">
+            {['Best time to visit Japan', 'Top places to see in Kyoto', 'What to eat in Tokyo?', 'Is Tokyo expensive?', 'Packing tips for tropical trips'].map((item, i) => (
               <li 
                 key={i} 
-                onClick={() => { setInputText(item); }}
-                className="flex items-center gap-3 hover:text-purple-600 cursor-pointer group"
+                onClick={() => { handleSendMessage(item); }}
+                className="flex items-center gap-3 hover:text-purple-600 cursor-pointer group text-sm"
               >
-                <Sparkles size={16} className="text-purple-300 group-hover:text-purple-500 transition-colors" />
-                {item}
+                <Sparkles size={16} className="text-purple-300 group-hover:text-purple-500 transition-colors shrink-0" />
+                <span>{item}</span>
               </li>
             ))}
           </ul>
@@ -166,60 +142,39 @@ export default function Assistant() {
           <div className="flex flex-col items-center max-w-3xl mx-auto w-full h-full pt-4 md:pt-8">
             
             {messages.length === 0 ? (
-              <div className="flex flex-col items-center justify-center w-full flex-1">
-                {/* Mobile Centered Branding */}
-                <div className="lg:hidden flex flex-col items-center mb-4 md:mb-8">
-                  <div className="w-10 h-10 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600 mb-2 md:mb-3 shadow-sm border border-purple-100">
-                    <Sparkles className="w-5 h-5 md:w-8 md:h-8" />
-                  </div>
-                  <h2 className="font-bold text-gray-900 text-base md:text-xl leading-none mb-1">Waylo</h2>
-                  <p className="text-[9px] md:text-xs text-gray-500 uppercase tracking-widest font-semibold">AI travel companion</p>
+              <div className="flex flex-col items-center justify-center w-full flex-1 my-auto text-center px-4">
+                {/* Branding Avatar */}
+                <div className="w-14 h-14 md:w-20 md:h-20 rounded-2xl md:rounded-3xl bg-purple-50 flex items-center justify-center text-purple-600 mb-4 md:mb-6 shadow-sm border border-purple-100">
+                  <Sparkles className="w-7 h-7 md:w-10 md:h-10" />
                 </div>
-
-                <h3 className="text-xl md:text-3xl font-bold text-gray-900 mb-2 md:mb-4 text-center tracking-tight">Generate an Itinerary</h3>
-                <p className="text-gray-500 text-xs md:text-base text-center max-w-lg leading-relaxed mb-5 md:mb-10 px-2">
-                  Tell me where you want to go and how many days you have, and I'll generate a comprehensive day-by-day plan. Or, just start chatting below!
-                </p>
                 
-                {/* Itinerary Generator Form */}
-                <form onSubmit={handleGenerate} className="w-full max-w-lg bg-white border border-gray-200 rounded-2xl md:rounded-3xl p-4 md:p-8 shadow-sm">
-                  <div className="mb-4 md:mb-6">
-                    <label className="block text-[10px] md:text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1.5 md:mb-3">Destination</label>
-                    <div className="relative">
-                      <Map size={16} className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                      <input 
-                        type="text" 
-                        value={destInput}
-                        onChange={e => setDestInput(e.target.value)}
-                        placeholder="e.g. Paris, France" 
-                        required
-                        className="w-full bg-gray-50 border-none rounded-xl py-3 md:py-4 pl-10 md:pl-14 pr-4 text-base focus:ring-2 focus:ring-purple-500 outline-none transition-shadow"
-                      />
-                    </div>
-                  </div>
-                  <div className="mb-5 md:mb-8">
-                    <label className="block text-[10px] md:text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1.5 md:mb-3">Duration (Days)</label>
-                    <input 
-                      type="number" 
-                      min="1" max="14"
-                      value={daysInput}
-                      onChange={e => setDaysInput(e.target.value)}
-                      required
-                      className="w-full bg-gray-50 border-none rounded-xl py-3 md:py-4 px-4 md:px-5 text-base focus:ring-2 focus:ring-purple-500 outline-none transition-shadow"
-                    />
-                  </div>
-                  <button 
-                    type="submit" 
-                    disabled={isGenerating}
-                    className="w-full bg-[#5538EE] hover:bg-[#4A2699] text-white rounded-xl py-3.5 md:py-4 text-sm md:text-base font-semibold flex items-center justify-center gap-2 transition-colors disabled:opacity-70"
-                  >
-                    {isGenerating ? (
-                      <><Loader2 size={18} className="animate-spin" /> Generating Plan...</>
-                    ) : (
-                      <><Sparkles size={18} /> Plan My Trip</>
-                    )}
-                  </button>
-                </form>
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 md:mb-3 tracking-tight">
+                  Where would you like to go?
+                </h2>
+                <p className="text-gray-500 text-xs md:text-base max-w-md mb-8 md:mb-10 leading-relaxed">
+                  I'm Waylo, your personal AI travel assistant. Ask me for destination recommendations, local food spots, travel tips, or packing advice.
+                </p>
+
+                {/* Suggested prompt chips */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 md:gap-3 w-full max-w-lg">
+                  {SUGGESTED_PROMPTS.map((prompt, index) => {
+                    const Icon = prompt.icon;
+                    return (
+                      <button
+                        key={index}
+                        onClick={() => handleSendMessage(prompt.text)}
+                        className="flex items-center gap-3 p-3 md:p-4 rounded-2xl border border-gray-200/80 bg-gray-50/50 hover:bg-purple-50/50 hover:border-purple-200 text-left transition-all group"
+                      >
+                        <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center text-purple-600 shadow-2xs shrink-0 group-hover:scale-105 transition-transform">
+                          <Icon size={16} />
+                        </div>
+                        <span className="text-xs md:text-sm font-medium text-gray-700 group-hover:text-purple-900 line-clamp-1">
+                          {prompt.text}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             ) : (
               <div className="flex flex-col w-full gap-6 pb-4">
@@ -274,7 +229,7 @@ export default function Assistant() {
         {/* Input Area — sticks above bottom nav, collapses padding when keyboard is open */}
         <div className={`flex-shrink-0 bg-white border-t border-gray-100 pt-3 md:pt-4 px-3 md:px-8 transition-[padding] duration-200 ${isKeyboardOpen ? 'pb-2' : 'pb-[4.5rem] md:pb-6'}`}>
           <div className="max-w-3xl mx-auto">
-            <form onSubmit={handleSendMessage} className="bg-white border border-gray-200 rounded-2xl md:rounded-3xl p-1.5 md:p-2 pl-3 md:pl-4 pr-1.5 md:pr-2 flex items-center shadow-sm focus-within:border-gray-300 focus-within:shadow-md transition-all">
+            <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} className="bg-white border border-gray-200 rounded-2xl md:rounded-3xl p-1.5 md:p-2 pl-3 md:pl-4 pr-1.5 md:pr-2 flex items-center shadow-sm focus-within:border-gray-300 focus-within:shadow-md transition-all">
               <input 
                 ref={inputRef}
                 type="text" 

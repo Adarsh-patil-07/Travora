@@ -1,7 +1,15 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Settings, LogOut, MapPin, Heart, Globe, ChevronDown, Camera } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { 
+  User, Settings, LogOut, MapPin, Heart, Globe, ChevronDown, Camera, Trash2, ArrowRight, Sparkles, Calendar, Compass
+} from 'lucide-react';
 import { pageTransition, fadeInUp, staggerContainer } from '../lib/motion';
+import { destinations } from '../data/destinations';
+import { destinationImages } from './Destination';
+import { useAuth } from '../contexts/AuthContext';
+import { removeDestinationFromDb, removeTripFromDb } from '../lib/db';
+import toast from 'react-hot-toast';
 
 const LANGUAGES = [
   { code: 'EN', display: 'EN', name: 'English' },
@@ -21,12 +29,18 @@ function getInitialLanguage() {
   return LANGUAGES[0];
 }
 
-import { useAuth } from '../contexts/AuthContext';
-
 export default function Profile() {
-  const { user, userData, signInWithGoogle, logout } = useAuth();
+  const { user, userData, signInWithGoogle, logout, refreshUserData } = useAuth();
+  const [activeTab, setActiveTab] = useState<'favorites' | 'trips' | 'settings'>('favorites');
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState(getInitialLanguage());
+  const navigate = useNavigate();
+
+  const savedDestinationsList = destinations.filter(d => 
+    userData?.savedDestinations?.includes(d.id)
+  );
+
+  const savedTripsList = userData?.savedTrips || [];
 
   const handleLanguageChange = (lang: typeof LANGUAGES[0]) => {
     setCurrentLang(lang);
@@ -51,6 +65,34 @@ export default function Profile() {
     }
   };
 
+  const handleRemoveFavorite = async (destId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) return;
+    try {
+      await removeDestinationFromDb(user.uid, destId);
+      await refreshUserData();
+      toast.success('Removed from favorites');
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to remove from favorites');
+    }
+  };
+
+  const handleDeleteTrip = async (tripId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) return;
+    try {
+      await removeTripFromDb(user.uid, tripId);
+      await refreshUserData();
+      toast.success('Trip deleted');
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to delete trip');
+    }
+  };
+
   return (
     <motion.main
       variants={pageTransition}
@@ -59,14 +101,13 @@ export default function Profile() {
       exit="exit"
       className="w-full bg-[#F8F9FA] min-h-screen flex-1 flex flex-col pt-16 md:pt-[72px]"
     >
-      {/* Cover Banner with Advanced Smooth Fade */}
+      {/* Cover Banner */}
       <div className="w-full h-40 md:h-72 lg:h-[340px] relative overflow-hidden bg-gray-900">
         <img 
           src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2560&auto=format&fit=crop" 
           alt="Cover" 
           className="w-full h-full object-cover opacity-80"
         />
-        {/* Smooth gradient fading perfectly into the page background */}
         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#F8F9FA] to-transparent pointer-events-none" />
       </div>
 
@@ -100,7 +141,7 @@ export default function Profile() {
                   <h1 className="text-lg md:text-2xl font-bold text-gray-900 mb-0.5 md:mb-1">{user.displayName || 'Travora Explorer'}</h1>
                   <p className="text-gray-500 text-xs md:text-sm mb-4 md:mb-6 truncate px-2">{user.email}</p>
                   
-                  <button onClick={logout} className="w-full flex items-center justify-center gap-2 p-2.5 md:p-3 bg-red-50 rounded-xl border border-red-100 hover:bg-red-100 transition-colors text-red-600 text-sm font-semibold">
+                  <button onClick={logout} className="w-full flex items-center justify-center gap-2 p-2.5 md:p-3 bg-red-50 rounded-xl border border-red-100 hover:bg-red-100 transition-colors text-red-600 text-sm font-semibold cursor-pointer">
                     <LogOut size={16} />
                     Sign Out
                   </button>
@@ -109,7 +150,7 @@ export default function Profile() {
                 <div className="w-full">
                   <h1 className="text-lg md:text-2xl font-bold text-gray-900 mb-2">Welcome</h1>
                   <p className="text-gray-500 text-xs mb-4 md:mb-6">Sign in to save your favorite destinations and plan trips.</p>
-                  <button onClick={handleAuth} className="w-full p-2.5 md:p-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors text-sm shadow-sm flex items-center justify-center gap-2">
+                  <button onClick={handleAuth} className="w-full p-2.5 md:p-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors text-sm shadow-sm flex items-center justify-center gap-2 cursor-pointer">
                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
                     Sign in with Google
                   </button>
@@ -121,83 +162,250 @@ export default function Profile() {
           {/* Right Column: Content Areas */}
           <div className="w-full md:w-2/3 lg:w-3/4 flex flex-col gap-4 md:gap-6 md:mt-24">
             
-            {/* Stats / Quick Links */}
+            {/* Navigation Tabs */}
             {user && (
-              <motion.div variants={fadeInUp} className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-                <button className="flex items-center p-3 md:p-5 bg-white rounded-3xl border border-gray-100 hover:border-blue-200 hover:shadow-md transition-all group text-left">
-                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-pink-50 flex items-center justify-center text-pink-500 mr-3 md:mr-4 group-hover:scale-110 transition-transform">
-                    <Heart size={20} className="md:w-6 md:h-6" />
+              <motion.div variants={fadeInUp} className="grid grid-cols-3 gap-2.5 md:gap-3 xl:gap-4">
+                <button 
+                  onClick={() => setActiveTab('favorites')}
+                  className={`group flex items-center justify-start gap-2.5 md:gap-3 rounded-[26px] border px-3 py-3 md:px-4 md:py-4 text-left cursor-pointer transition-all duration-200 ${
+                    activeTab === 'favorites'
+                      ? 'bg-[#fdf0f3] border-[#f5c7d1] shadow-[0_10px_28px_rgba(236,115,160,0.12)]'
+                      : 'bg-[#fff7f9] border-[#f3dce2] hover:bg-[#fff0f4]'
+                  }`}
+                >
+                  <div className={`flex h-8 w-8 md:h-9 md:w-9 items-center justify-center rounded-2xl shrink-0 transition-colors ${
+                    activeTab === 'favorites' ? 'bg-[#f8dfe8] text-pink-600' : 'bg-pink-100 text-pink-500'
+                  }`}>
+                    <Heart size={13} className="md:w-[15px] md:h-[15px]" />
                   </div>
-                  <div className="flex-1">
-                    <h3 className="text-gray-900 font-bold text-sm md:text-base">Saved Destinations</h3>
-                    <p className="text-gray-500 text-[10px] md:text-xs mt-0.5">{userData?.savedDestinations.length || 0} places saved</p>
+                  <div className="min-w-0 flex-1 text-left">
+                    <h3 className="text-[10px] font-bold leading-tight text-gray-900 sm:text-[11px] md:text-sm">Favorites</h3>
+                    <p className="text-[9px] leading-tight text-gray-500 sm:text-[10px] md:text-[11px]">{savedDestinationsList.length} places</p>
                   </div>
                 </button>
 
-                <button className="flex items-center p-3 md:p-5 bg-white rounded-3xl border border-gray-100 hover:border-blue-200 hover:shadow-md transition-all group text-left">
-                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-blue-50 flex items-center justify-center text-blue-500 mr-3 md:mr-4 group-hover:scale-110 transition-transform">
-                    <MapPin size={20} className="md:w-6 md:h-6" />
+                <button 
+                  onClick={() => setActiveTab('trips')}
+                  className={`group flex items-center justify-start gap-2.5 md:gap-3 rounded-[26px] border px-3 py-3 md:px-4 md:py-4 text-left cursor-pointer transition-all duration-200 ${
+                    activeTab === 'trips'
+                      ? 'bg-[#f6f2ff] border-[#d9ccff] shadow-[0_10px_28px_rgba(139,92,246,0.12)]'
+                      : 'bg-[#faf7ff] border-[#e8dcff] hover:bg-[#f4eeff]'
+                  }`}
+                >
+                  <div className={`flex h-8 w-8 md:h-9 md:w-9 items-center justify-center rounded-2xl shrink-0 transition-colors ${
+                    activeTab === 'trips' ? 'bg-[#eae3ff] text-violet-600' : 'bg-violet-100 text-violet-500'
+                  }`}>
+                    <Compass size={13} className="md:w-[15px] md:h-[15px]" />
                   </div>
-                  <div className="flex-1">
-                    <h3 className="text-gray-900 font-bold text-sm md:text-base">My Trips</h3>
-                    <p className="text-gray-500 text-[10px] md:text-xs mt-0.5">{userData?.myTrips.length || 0} planned trips</p>
+                  <div className="min-w-0 flex-1 text-left">
+                    <h3 className="text-[10px] font-bold leading-tight text-gray-900 sm:text-[11px] md:text-sm">My Trips</h3>
+                    <p className="text-[9px] leading-tight text-gray-500 sm:text-[10px] md:text-[11px]">{savedTripsList.length} planned</p>
+                  </div>
+                </button>
+
+                <button 
+                  onClick={() => setActiveTab('settings')}
+                  className={`group flex items-center justify-start gap-2.5 md:gap-3 rounded-[26px] border px-3 py-3 md:px-4 md:py-4 text-left cursor-pointer transition-all duration-200 ${
+                    activeTab === 'settings'
+                      ? 'bg-[#edf8ff] border-[#cfe8ff] shadow-[0_10px_28px_rgba(59,130,246,0.12)]'
+                      : 'bg-[#f6fbff] border-[#dfeefd] hover:bg-[#edf7ff]'
+                  }`}
+                >
+                  <div className={`flex h-8 w-8 md:h-9 md:w-9 items-center justify-center rounded-2xl shrink-0 transition-colors ${
+                    activeTab === 'settings' ? 'bg-[#dceeff] text-blue-600' : 'bg-blue-100 text-blue-500'
+                  }`}>
+                    <Settings size={13} className="md:w-[15px] md:h-[15px]" />
+                  </div>
+                  <div className="min-w-0 flex-1 text-left">
+                    <h3 className="text-[10px] font-bold leading-tight text-gray-900 sm:text-[11px] md:text-sm">Settings</h3>
+                    <p className="text-[9px] leading-tight text-gray-500 sm:text-[10px] md:text-[11px]">Preferences</p>
                   </div>
                 </button>
               </motion.div>
             )}
 
-            {/* Settings Card */}
-            <motion.div variants={fadeInUp} className="bg-white rounded-3xl border border-gray-100 shadow-sm relative z-10">
-              <div className="px-5 py-4 md:px-6 md:py-5 border-b border-gray-50 bg-gray-50/50 rounded-t-3xl">
-                <h3 className="font-bold text-gray-900 flex items-center gap-2 text-sm md:text-base">
-                  <Settings size={18} className="text-gray-400" />
-                  Preferences
-                </h3>
-              </div>
-              
-              <div className="p-4 md:p-6">
-                <div className="relative max-w-sm">
-                  <label className="block text-[10px] md:text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Display Language</label>
-                  <button 
-                    onClick={() => setIsLangOpen(!isLangOpen)}
-                    className="w-full flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-200 hover:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Globe size={18} className="text-blue-500" />
-                      <span className="font-medium text-sm text-gray-900">{currentLang.name}</span>
-                    </div>
-                    <ChevronDown size={16} className={`text-gray-400 transition-transform duration-200 ${isLangOpen ? 'rotate-180' : ''}`} />
-                  </button>
-
-                  <AnimatePresence>
-                    {isLangOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -5, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -5, scale: 0.95 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden py-2 z-20"
-                      >
-                        {LANGUAGES.map((lang) => (
-                          <button
-                            key={lang.code}
-                            onClick={() => handleLanguageChange(lang)}
-                            className={`w-full text-left px-4 py-3 transition-colors flex items-center justify-between ${
-                              currentLang.code === lang.code 
-                                ? 'bg-blue-50 text-blue-600 font-semibold' 
-                                : 'text-gray-700 hover:bg-gray-50'
-                            }`}
-                          >
-                            <span className="text-sm">{lang.name}</span>
-                            <span className="text-[10px] uppercase font-bold opacity-50 ml-3">{lang.display}</span>
-                          </button>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+            {/* TAB CONTENT: FAVORITES */}
+            {activeTab === 'favorites' && user && (
+              <motion.div variants={fadeInUp} className="bg-white rounded-3xl p-5 md:p-6 border border-gray-100 shadow-sm">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="font-bold text-gray-900 text-lg md:text-xl flex items-center gap-2">
+                    <Heart size={20} className="text-pink-500 fill-pink-500" /> Saved Destinations
+                  </h3>
+                  <Link to="/explore" className="text-xs text-blue-600 font-semibold hover:underline">
+                    + Explore more
+                  </Link>
                 </div>
-              </div>
-            </motion.div>
+
+                {savedDestinationsList.length === 0 ? (
+                  <div className="text-center py-12 px-4 border border-dashed border-gray-200 rounded-2xl">
+                    <div className="w-12 h-12 rounded-full bg-pink-50 text-pink-500 flex items-center justify-center mx-auto mb-3">
+                      <Heart size={20} />
+                    </div>
+                    <h4 className="font-bold text-gray-900 mb-1 text-sm md:text-base">No favorites yet</h4>
+                    <p className="text-gray-500 text-xs md:text-sm mb-4">Click the heart icon on any destination to save it here.</p>
+                    <Link to="/explore" className="inline-flex items-center gap-2 bg-gray-900 text-white text-xs font-semibold px-4 py-2.5 rounded-full hover:bg-gray-800 transition-colors">
+                      Discover Destinations <ArrowRight size={14} />
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {savedDestinationsList.map(dest => {
+                      const imgUrl = destinationImages[dest.id] || `https://image.pollinations.ai/prompt/${encodeURIComponent(dest.imageQuery)}?width=800&height=500&nologo=true`;
+                      return (
+                        <Link 
+                          key={dest.id}
+                          to={`/destination/${dest.id}`}
+                          className="group relative flex bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 hover:border-gray-200 hover:shadow-md transition-all"
+                        >
+                          <div className="w-28 h-28 shrink-0 overflow-hidden">
+                            <img src={imgUrl} alt={dest.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                          </div>
+                          <div className="p-3 flex-1 flex flex-col justify-between min-w-0">
+                            <div>
+                              <div className="flex items-center justify-between gap-1">
+                                <h4 className="font-bold text-gray-900 text-sm md:text-base truncate">{dest.name}</h4>
+                                <button
+                                  onClick={(e) => handleRemoveFavorite(dest.id, e)}
+                                  className="p-1 text-gray-400 hover:text-red-500 transition-colors rounded-full hover:bg-white"
+                                  title="Remove from favorites"
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              </div>
+                              <p className="text-gray-500 text-xs flex items-center gap-1 mt-0.5">
+                                <MapPin size={12} /> {dest.country}
+                              </p>
+                            </div>
+                            <span className="text-[11px] text-blue-600 font-semibold flex items-center gap-1 mt-2">
+                              View destination <ArrowRight size={12} />
+                            </span>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </motion.div>
+            )}
+
+            {/* TAB CONTENT: MY TRIPS */}
+            {activeTab === 'trips' && user && (
+              <motion.div variants={fadeInUp} className="bg-white rounded-3xl p-5 md:p-6 border border-gray-100 shadow-sm">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="font-bold text-gray-900 text-lg md:text-xl flex items-center gap-2">
+                    <Compass size={20} className="text-purple-600" /> My Planned Trips
+                  </h3>
+                  <Link to="/planner" className="text-xs text-purple-600 font-semibold hover:underline">
+                    + Plan new trip
+                  </Link>
+                </div>
+
+                {savedTripsList.length === 0 ? (
+                  <div className="text-center py-12 px-4 border border-dashed border-gray-200 rounded-2xl">
+                    <div className="w-12 h-12 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center mx-auto mb-3">
+                      <Calendar size={20} />
+                    </div>
+                    <h4 className="font-bold text-gray-900 mb-1 text-sm md:text-base">No trips planned yet</h4>
+                    <p className="text-gray-500 text-xs md:text-sm mb-4">Let Waylo craft your dream itinerary in seconds.</p>
+                    <Link to="/planner" className="inline-flex items-center gap-2 bg-[#5538EE] text-white text-xs font-semibold px-4 py-2.5 rounded-full hover:bg-[#4A2699] transition-colors">
+                      <Sparkles size={14} /> Plan a Trip with AI
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {savedTripsList.map((trip) => (
+                      <div 
+                        key={trip.id}
+                        className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100 hover:border-purple-200 transition-all gap-3"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600 shrink-0 font-bold text-sm">
+                            <Sparkles size={18} />
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-gray-900 text-sm md:text-base">{trip.destination}</h4>
+                            <p className="text-xs text-gray-500 font-medium">
+                              {trip.duration} • Created {new Date(trip.createdAt).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                          <button
+                            onClick={() => navigate('/planner', { state: { itineraryData: trip.itinerary } })}
+                            className="flex-1 sm:flex-none px-4 py-2 bg-[#5538EE] hover:bg-[#4A2699] text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                          >
+                            View Itinerary <ArrowRight size={12} />
+                          </button>
+                          <button
+                            onClick={(e) => handleDeleteTrip(trip.id, e)}
+                            className="p-2 text-gray-400 hover:text-red-500 rounded-xl hover:bg-white transition-colors cursor-pointer"
+                            title="Delete trip"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            )}
+
+            {/* TAB CONTENT: SETTINGS (OR IF NOT LOGGED IN) */}
+            {(activeTab === 'settings' || !user) && (
+              <motion.div variants={fadeInUp} className="bg-white rounded-3xl border border-gray-100 shadow-sm relative z-10">
+                <div className="px-5 py-4 md:px-6 md:py-5 border-b border-gray-50 bg-gray-50/50 rounded-t-3xl">
+                  <h3 className="font-bold text-gray-900 flex items-center gap-2 text-sm md:text-base">
+                    <Settings size={18} className="text-gray-400" />
+                    Preferences
+                  </h3>
+                </div>
+                
+                <div className="p-4 md:p-6">
+                  <div className="relative max-w-sm">
+                    <label className="block text-[10px] md:text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Display Language</label>
+                    <button 
+                      onClick={() => setIsLangOpen(!isLangOpen)}
+                      className="w-full flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-200 hover:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all cursor-pointer"
+                    >
+                      <div className="flex items-center gap-3">
+                        <Globe size={18} className="text-blue-500" />
+                        <span className="font-medium text-sm text-gray-900">{currentLang.name}</span>
+                      </div>
+                      <ChevronDown size={16} className={`text-gray-400 transition-transform duration-200 ${isLangOpen ? 'rotate-180' : ''}`} />
+                    </button>
+
+                    <AnimatePresence>
+                      {isLangOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -5, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: -5, scale: 0.95 }}
+                          transition={{ duration: 0.15 }}
+                          className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden py-2 z-20"
+                        >
+                          {LANGUAGES.map((lang) => (
+                            <button
+                              key={lang.code}
+                              onClick={() => handleLanguageChange(lang)}
+                              className={`w-full text-left px-4 py-3 transition-colors flex items-center justify-between cursor-pointer ${
+                                currentLang.code === lang.code 
+                                  ? 'bg-blue-50 text-blue-600 font-semibold' 
+                                  : 'text-gray-700 hover:bg-gray-50'
+                              }`}
+                            >
+                              <span className="text-sm">{lang.name}</span>
+                              <span className="text-[10px] uppercase font-bold opacity-50 ml-3">{lang.display}</span>
+                            </button>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </div>
+              </motion.div>
+            )}
 
           </div>
         </motion.div>
