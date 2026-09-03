@@ -161,7 +161,17 @@ export default function Planner() {
               <div className="space-y-8 md:space-y-12">
                 {currentDayData.activities.map((item, index) => {
                   const tagInfo = getTagForActivity(item.title, item.description);
-                  const actImage = `https://image.pollinations.ai/prompt/${encodeURIComponent(itinerary.destination + ' ' + item.title + ' high quality photography')}?width=400&height=200&nologo=true`;
+                  const genericImages = [
+                    'https://images.unsplash.com/photo-1527631746610-bca00a040d60?q=80&w=800&auto=format&fit=crop', // Travel map
+                    'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=800&auto=format&fit=crop', // Beach
+                    'https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=800&auto=format&fit=crop', // Restaurant
+                    'https://images.unsplash.com/photo-1552832230-c0197dd311b5?q=80&w=800&auto=format&fit=crop', // Architecture
+                    'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=800&auto=format&fit=crop', // Nature
+                    'https://images.unsplash.com/photo-1533929736458-a5694d084b6e?q=80&w=800&auto=format&fit=crop', // Shopping/Street
+                    'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=800&auto=format&fit=crop', // Dining interior
+                    'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?q=80&w=800&auto=format&fit=crop', // Landmarks
+                  ];
+                  const actImage = genericImages[(index + currentDayData.day) % genericImages.length];
                   
                   return (
                     <motion.div 
