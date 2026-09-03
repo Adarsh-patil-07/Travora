@@ -27,6 +27,13 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Prevent iOS Safari auto-zoom on input focus (requires font-size >= 16px) */
+@media screen and (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
 /* Hide Google Translate UI */
 body {
   top: 0 !important;
