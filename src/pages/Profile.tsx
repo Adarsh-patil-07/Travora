@@ -195,52 +195,52 @@ export default function Profile() {
               <motion.div variants={fadeInUp} className="grid grid-cols-3 gap-2 md:gap-4">
                 <button 
                   onClick={() => setActiveTab('favorites')}
-                  className={`flex items-center p-2.5 sm:p-3 md:p-5 rounded-2xl md:rounded-3xl border transition-all text-left cursor-pointer ${
+                  className={`flex items-center py-1.5 px-2.5 sm:py-2 sm:px-3 md:py-4 md:px-5 rounded-2xl md:rounded-3xl border transition-all text-left cursor-pointer ${
                     activeTab === 'favorites' 
                       ? 'bg-white border-pink-200 shadow-md ring-2 ring-pink-400/20' 
                       : 'bg-white/70 border-gray-100 hover:bg-white'
                   }`}
                 >
-                  <div className="w-7 h-7 sm:w-9 sm:h-9 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-pink-50 flex items-center justify-center text-pink-500 mr-2 md:mr-4 shrink-0">
-                    <Heart size={15} className="md:w-6 md:h-6" />
+                  <div className="w-7 h-7 sm:w-9 sm:h-9 md:w-11 md:h-11 rounded-xl md:rounded-2xl bg-pink-50 flex items-center justify-center text-pink-500 mr-2 md:mr-3.5 shrink-0">
+                    <Heart size={15} className="md:w-5 md:h-5" />
                   </div>
-                  <div className="min-w-0">
-                    <h3 className="text-gray-900 font-bold text-xs md:text-base truncate">Favorites</h3>
-                    <p className="text-gray-500 text-[9px] sm:text-[10px] md:text-xs">{savedDestinationsList.length} places</p>
+                  <div className="min-w-0 flex flex-col gap-0.5 md:gap-0">
+                    <h3 className="text-gray-900 font-bold text-xs md:text-[15px] leading-none truncate">Favorites</h3>
+                    <p className="text-gray-500 text-[9px] sm:text-[10px] md:text-xs leading-tight">{savedDestinationsList.length} places</p>
                   </div>
                 </button>
 
                 <button 
                   onClick={() => setActiveTab('trips')}
-                  className={`flex items-center p-2.5 sm:p-3 md:p-5 rounded-2xl md:rounded-3xl border transition-all text-left cursor-pointer ${
+                  className={`flex items-center py-1.5 px-2.5 sm:py-2 sm:px-3 md:py-4 md:px-5 rounded-2xl md:rounded-3xl border transition-all text-left cursor-pointer ${
                     activeTab === 'trips' 
                       ? 'bg-white border-purple-200 shadow-md ring-2 ring-purple-400/20' 
                       : 'bg-white/70 border-gray-100 hover:bg-white'
                   }`}
                 >
-                  <div className="w-7 h-7 sm:w-9 sm:h-9 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600 mr-2 md:mr-4 shrink-0">
-                    <Compass size={15} className="md:w-6 md:h-6" />
+                  <div className="w-7 h-7 sm:w-9 sm:h-9 md:w-11 md:h-11 rounded-xl md:rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600 mr-2 md:mr-3.5 shrink-0">
+                    <Compass size={15} className="md:w-5 md:h-5" />
                   </div>
-                  <div className="min-w-0">
-                    <h3 className="text-gray-900 font-bold text-xs md:text-base truncate">My Trips</h3>
-                    <p className="text-gray-500 text-[9px] sm:text-[10px] md:text-xs">{savedTripsList.length} planned</p>
+                  <div className="min-w-0 flex flex-col gap-0.5 md:gap-0">
+                    <h3 className="text-gray-900 font-bold text-xs md:text-[15px] leading-none truncate">My Trips</h3>
+                    <p className="text-gray-500 text-[9px] sm:text-[10px] md:text-xs leading-tight">{savedTripsList.length} planned</p>
                   </div>
                 </button>
 
                 <button 
                   onClick={() => setActiveTab('settings')}
-                  className={`flex items-center p-2.5 sm:p-3 md:p-5 rounded-2xl md:rounded-3xl border transition-all text-left cursor-pointer ${
+                  className={`flex items-center py-1.5 px-2.5 sm:py-2 sm:px-3 md:py-4 md:px-5 rounded-2xl md:rounded-3xl border transition-all text-left cursor-pointer ${
                     activeTab === 'settings' 
                       ? 'bg-white border-blue-200 shadow-md ring-2 ring-blue-400/20' 
                       : 'bg-white/70 border-gray-100 hover:bg-white'
                   }`}
                 >
-                  <div className="w-7 h-7 sm:w-9 sm:h-9 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-blue-50 flex items-center justify-center text-blue-500 mr-2 md:mr-4 shrink-0">
-                    <Settings size={15} className="md:w-6 md:h-6" />
+                  <div className="w-7 h-7 sm:w-9 sm:h-9 md:w-11 md:h-11 rounded-xl md:rounded-2xl bg-blue-50 flex items-center justify-center text-blue-500 mr-2 md:mr-3.5 shrink-0">
+                    <Settings size={15} className="md:w-5 md:h-5" />
                   </div>
-                  <div className="min-w-0">
-                    <h3 className="text-gray-900 font-bold text-xs md:text-base truncate">Settings</h3>
-                    <p className="text-gray-500 text-[9px] sm:text-[10px] md:text-xs">Preferences</p>
+                  <div className="min-w-0 flex flex-col gap-0.5 md:gap-0">
+                    <h3 className="text-gray-900 font-bold text-xs md:text-[15px] leading-none truncate">Settings</h3>
+                    <p className="text-gray-500 text-[9px] sm:text-[10px] md:text-xs leading-tight">Preferences</p>
                   </div>
                 </button>
               </motion.div>
