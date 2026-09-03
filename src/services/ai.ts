@@ -68,7 +68,7 @@ async function fallbackDirectGeminiCall(messages: ChatMessage[], context?: ChatC
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
+        model: 'qwen/qwen3.8-27b',
         messages: [
           { role: 'system', content: systemText },
           ...messages.map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content }))
@@ -179,7 +179,7 @@ You must respond ONLY with a valid JSON object strictly matching this exact stru
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
+        model: 'qwen/qwen3.8-27b',
         messages: [
           { role: 'system', content: systemText },
           { role: 'user', content: 'Generate the itinerary JSON now.' }

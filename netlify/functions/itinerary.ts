@@ -51,7 +51,7 @@ Each day should have 3-5 logical activities (morning, afternoon, evening). Ensur
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'llama-3.3-70b-versatile',
+          model: 'qwen/qwen3.8-27b',
           messages: [
             { role: 'system', content: systemText },
             { role: 'user', content: 'Generate the itinerary JSON now.' }
