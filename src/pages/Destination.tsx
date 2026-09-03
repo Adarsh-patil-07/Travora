@@ -112,7 +112,7 @@ export default function Destination() {
 
   // States for AI Itinerary generation
   const [isGenerating, setIsGenerating] = useState(false);
-  const [itinerary, setItinerary] = useState<any>(null);
+  const [itinerary] = useState<any>(null);
   const navigate = useNavigate();
 
   if (!dest) {

@@ -2,10 +2,10 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Sparkles, Send, Map, Loader2, ArrowRight, User, Plus, MessageSquare, Paperclip, Image as ImageIcon
+  Sparkles, Send, Map, Loader2, User, Plus, MessageSquare, Paperclip, Image as ImageIcon
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
-import { pageTransition, fadeInUp } from '../lib/motion';
+import { pageTransition } from '../lib/motion';
 import { generateItinerary, sendMessageToWaylo } from '../services/ai';
 import toast from 'react-hot-toast';
 import type { ChatMessage } from '../types';

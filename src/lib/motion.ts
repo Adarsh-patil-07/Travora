@@ -1,7 +1,7 @@
 import type { Variants } from 'framer-motion';
 
 // Refined easing curve (similar to Apple's ease-out)
-const premiumEase = [0.22, 1, 0.36, 1];
+const premiumEase: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 // Page transition variants - Removed Y translation to prevent layout jumps, added subtle scale
 export const pageTransition: Variants = {

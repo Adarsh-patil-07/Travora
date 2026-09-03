@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MapPin, Search, Play, CloudSun, LocateFixed, Loader2, Palmtree, RadioTower, Mountain, Building2 } from 'lucide-react';
+import { MapPin, Search, CloudSun, LocateFixed, Loader2, Palmtree, RadioTower, Mountain, Building2 } from 'lucide-react';
 import { fadeInUp, staggerContainer } from '../../lib/motion';
 
 import heroVideoPath from '../../assets/Hero-video.mp4';
@@ -12,7 +12,6 @@ export default function Hero() {
   const [isLocating, setIsLocating] = useState(false);
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
   const navigate = useNavigate();
-  const bgImageUrl = "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2560&auto=format&fit=crop";
 
   const locateUser = () => {
     if (isLocating) return;
