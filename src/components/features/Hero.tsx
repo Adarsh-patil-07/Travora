@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MapPin, Search, CloudSun, LocateFixed, Loader2, Palmtree, RadioTower, Mountain, Building2 } from 'lucide-react';
@@ -8,12 +8,12 @@ import heroVideoPath from '../../assets/Hero-video.mp4';
 
 export default function Hero() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [currentLocation, setCurrentLocation] = useState('Manali, India');
+  const [currentLocation, setCurrentLocation] = useState('Bengaluru, India');
   const [isLocating, setIsLocating] = useState(false);
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const locateUser = () => {
+  const locateUser = useCallback(() => {
     if (isLocating) return;
     setIsLocating(true);
     
@@ -50,7 +50,7 @@ export default function Hero() {
       },
       { timeout: 10000, maximumAge: 60000 }
     );
-  };
+  }, [isLocating]);
 
   // Ask for location on initial load
   useEffect(() => {
@@ -60,7 +60,7 @@ export default function Hero() {
       setVideoSrc(heroVideoPath);
     }, 100);
     return () => clearTimeout(timer);
-  }, []);
+  }, [locateUser]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
@@ -94,10 +94,10 @@ export default function Hero() {
         <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#111111] via-[#111111]/60 to-transparent" />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
+      <div className="relative z-10 mx-auto max-w-[1920px] px-6 sm:px-8 md:px-10 lg:px-12 xl:px-16 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
           
-          {/* Left Content */}
+          {/* Left Content - Aligned perfectly with Travora logo */}
           <motion.div
             variants={staggerContainer}
             initial="hidden"
@@ -107,16 +107,16 @@ export default function Hero() {
             {/* Tagline Badge */}
             <motion.div variants={fadeInUp} className="flex items-center gap-3.5 mb-4 md:mb-5">
               <div className="w-7 md:w-9 h-[2px] bg-accent"></div>
-              <span className="text-white tracking-widest text-xs md:text-xs font-semibold uppercase opacity-90">Discover the world</span>
+              <span className="text-white tracking-widest text-xs font-semibold uppercase opacity-90">Discover the world</span>
             </motion.div>
             
             {/* Main Heading with Elegant Line Spacing */}
             <motion.h1 
               variants={fadeInUp}
-              className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold mb-5 md:mb-6 tracking-tight leading-[1.15]"
+              className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-[3.75rem] font-semibold mb-5 md:mb-6 tracking-tight leading-[1.15]"
             >
               Find your next
-              <span className="font-instrument-serif italic text-accent font-normal text-4xl sm:text-5xl md:text-6xl lg:text-[4.25rem] block mt-1.5 md:mt-2">
+              <span className="font-instrument-serif italic text-accent font-normal text-4xl sm:text-5xl md:text-6xl lg:text-[4.5rem] block mt-1.5 md:mt-2">
                 adventure
               </span>
             </motion.h1>
@@ -124,7 +124,7 @@ export default function Hero() {
             {/* Description Subtitle */}
             <motion.p 
               variants={fadeInUp}
-              className="text-white/80 text-xs sm:text-sm md:text-base font-light max-w-xl mb-8 md:mb-10 leading-relaxed"
+              className="text-white/85 text-xs sm:text-sm md:text-base font-light max-w-xl mb-8 md:mb-10 leading-relaxed"
             >
               Explore amazing destinations, get real-time weather, discover places to visit, and plan unforgettable trips with your AI travel companion.
             </motion.p>
@@ -177,13 +177,13 @@ export default function Hero() {
             </motion.div>
           </motion.div>
 
-          {/* Right Content - Weather Widget */}
+          {/* Right Content - Weather Widget Aligned with Profile Avatar */}
           <div className="hidden lg:flex lg:col-span-5 justify-end items-center relative">
             <motion.div 
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3, duration: 0.7 }}
-              className="bg-white/10 backdrop-blur-xl border border-white/20 p-6 md:p-7 rounded-3xl text-white shadow-2xl w-full max-w-[290px]"
+              className="bg-white/10 backdrop-blur-2xl border border-white/20 p-6 md:p-7 rounded-3xl text-white shadow-[0_8px_32px_rgba(0,0,0,0.37)] w-full max-w-[310px]"
             >
               <div className="flex items-center gap-2 mb-4">
                 <MapPin size={15} className="text-white" />

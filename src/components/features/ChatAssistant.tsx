@@ -104,21 +104,31 @@ Ask me for **custom itineraries**, **hidden gems**, **local food spots**, or tra
 
   return (
     <>
-      {/* Floating Action Button */}
-      <motion.button
-        initial={{ scale: 0 }}
-        animate={{ scale: isOpen ? 0 : 1 }}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => setIsOpen(true)}
-        className="hidden lg:flex fixed bottom-6 right-6 z-40 bg-white hover:bg-gray-50 text-gray-900 px-5 py-2.5 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-gray-200/90 hover:border-purple-300 hover:shadow-[0_10px_36px_rgba(85,56,238,0.2)] transition-all group gap-2.5 cursor-pointer"
-        aria-label="Open AI Assistant"
-      >
-        <div className="w-5 h-5 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 group-hover:scale-110 transition-transform">
-          <Sparkles size={12} />
-        </div>
-        <span className="font-bold text-xs tracking-wide text-gray-800">Ask Waylo</span>
-      </motion.button>
+      {/* Floating Action Button - Advanced Glassmorphism with Brand Gradient & Ambient Glow */}
+      <div className="hidden lg:flex fixed bottom-6 right-6 z-40 items-center justify-center">
+        {/* Ambient Glow */}
+        <div className="absolute inset-0 bg-[#5538EE]/20 rounded-full blur-md scale-110 pointer-events-none" />
+
+        <motion.button
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: isOpen ? 0 : 1, opacity: isOpen ? 0 : 1 }}
+          whileHover={{ scale: 1.04, y: -1 }}
+          whileTap={{ scale: 0.96 }}
+          onClick={() => setIsOpen(true)}
+          className="relative bg-white/95 hover:bg-white backdrop-blur-xl text-gray-900 pl-2.5 pr-4 py-2 rounded-full shadow-[0_8px_32px_rgba(85,56,238,0.22),0_2px_8px_rgba(0,0,0,0.06)] border border-purple-200/90 hover:border-purple-400/80 transition-all duration-300 group flex items-center gap-2.5 cursor-pointer"
+          aria-label="Open AI Assistant"
+        >
+          {/* Glowing Gradient Avatar with Gold Shimmer */}
+          <div className="relative w-6 h-6 rounded-full bg-gradient-to-tr from-[#5538EE] to-[#8C65F7] flex items-center justify-center text-white shadow-xs group-hover:shadow-[0_0_12px_rgba(85,56,238,0.5)] transition-shadow">
+            <Sparkles size={13} className="text-amber-300 group-hover:rotate-12 transition-transform duration-300" />
+            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-400 rounded-full border border-white" />
+          </div>
+
+          <span className="font-bold text-xs tracking-tight text-gray-900 pr-1">
+            Ask Waylo
+          </span>
+        </motion.button>
+      </div>
 
       {/* Chat Panel Overlay */}
       <AnimatePresence>

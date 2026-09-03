@@ -1,21 +1,32 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { HelmetProvider } from 'react-helmet-async';
+import { Toaster } from 'react-hot-toast';
 
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import MobileBottomNav from './components/layout/MobileBottomNav';
 import ScrollToTop from './components/layout/ScrollToTop';
 import ChatAssistant from './components/features/ChatAssistant';
+import { AuthProvider } from './contexts/AuthContext';
 
-import Home from './pages/Home';
-import Explore from './pages/Explore';
-import Destination from './pages/Destination';
-import Assistant from './pages/Assistant';
-import Planner from './pages/Planner';
-import Profile from './pages/Profile';
+// Route-level Code Splitting for optimal initial page load speed
+const Home = lazy(() => import('./pages/Home'));
+const Explore = lazy(() => import('./pages/Explore'));
+const Destination = lazy(() => import('./pages/Destination'));
+const Assistant = lazy(() => import('./pages/Assistant'));
+const Planner = lazy(() => import('./pages/Planner'));
+const Profile = lazy(() => import('./pages/Profile'));
 
-import { Toaster } from 'react-hot-toast';
+/* ===== Route Loading Fallback ===== */
+function PageLoader() {
+  return (
+    <div className="flex-1 min-h-[60vh] flex items-center justify-center">
+      <div className="w-8 h-8 rounded-full border-2 border-purple-200 border-t-[#5538EE] animate-spin" />
+    </div>
+  );
+}
 
 /* ===== Animated Routes Wrapper ===== */
 function AnimatedRoutes() {
@@ -23,14 +34,16 @@ function AnimatedRoutes() {
 
   return (
     <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<Home />} />
-        <Route path="/explore" element={<Explore />} />
-        <Route path="/destination/:id" element={<Destination />} />
-        <Route path="/assistant" element={<Assistant />} />
-        <Route path="/planner" element={<Planner />} />
-        <Route path="/profile" element={<Profile />} />
-      </Routes>
+      <Suspense fallback={<PageLoader />}>
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={<Home />} />
+          <Route path="/explore" element={<Explore />} />
+          <Route path="/destination/:id" element={<Destination />} />
+          <Route path="/assistant" element={<Assistant />} />
+          <Route path="/planner" element={<Planner />} />
+          <Route path="/profile" element={<Profile />} />
+        </Routes>
+      </Suspense>
     </AnimatePresence>
   );
 }
@@ -80,8 +93,6 @@ function MainLayout() {
 }
 
 /* ===== Main App ===== */
-import { AuthProvider } from './contexts/AuthContext';
-
 export default function App() {
   return (
     <HelmetProvider>

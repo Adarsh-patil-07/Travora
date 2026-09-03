@@ -48,7 +48,7 @@ export default function Home() {
         <Hero />
       </div>
 
-      <div className="flex-1 flex flex-col justify-center gap-16 lg:gap-24 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full py-16 lg:py-24">
+      <div className="flex-1 flex flex-col justify-center gap-16 lg:gap-24 mx-auto max-w-[1920px] px-6 sm:px-8 md:px-10 lg:px-12 xl:px-16 w-full py-16 lg:py-24">
         
         {/* Trending Destinations Section */}
         <section>

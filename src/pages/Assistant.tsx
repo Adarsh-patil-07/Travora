@@ -100,10 +100,10 @@ export default function Assistant() {
       initial="initial"
       animate="animate"
       exit="exit"
-      className="flex h-[100svh] pt-14 md:pt-16 bg-[#FAFAF7] w-full overflow-hidden"
+      className="flex h-[100svh] pt-16 md:pt-20 bg-[#FAFAF7] w-full overflow-hidden"
     >
-      {/* LEFT SIDEBAR - Aligned with the Navbar logo left offset */}
-      <div className="hidden lg:flex flex-col w-[320px] xl:w-[350px] bg-[#F5F4EE] border-r border-gray-200/70 h-full flex-shrink-0 overflow-y-auto no-scrollbar">
+      {/* LEFT SIDEBAR - Unified with #FAFAF7 page background */}
+      <div className="hidden lg:flex flex-col w-[320px] xl:w-[350px] bg-[#FAFAF7] border-r border-gray-200/70 h-full flex-shrink-0 overflow-y-auto no-scrollbar">
         <div className="pl-8 lg:pl-12 pr-6 pt-6 pb-2">
           <h4 className="text-[11px] font-bold tracking-widest text-[#5538EE] uppercase mb-4">AI Assistant</h4>
           <div className="flex items-center gap-3 mb-5">
@@ -119,7 +119,7 @@ export default function Assistant() {
           {/* Compact, neatly proportioned New Conversation Button */}
           <button 
             onClick={startNewConversation} 
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full border border-gray-200 bg-white hover:bg-gray-50 hover:border-gray-300 transition-all mb-4 text-xs font-semibold text-gray-700 cursor-pointer shadow-2xs group"
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full border border-gray-200/80 bg-white hover:bg-gray-50 hover:border-gray-300 transition-all mb-4 text-xs font-semibold text-gray-700 cursor-pointer shadow-2xs group"
           >
             <Plus size={14} className="text-purple-600 group-hover:rotate-90 transition-transform duration-200" />
             <span>New conversation</span>
@@ -127,15 +127,15 @@ export default function Assistant() {
         </div>
 
         <div className="pl-8 lg:pl-12 pr-6 mb-6">
-          <h3 className="text-xs font-semibold text-gray-400 mb-3">Suggested Topics</h3>
-          <ul className="space-y-2 text-gray-600 font-medium text-xs">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3.5">Suggested Topics</h3>
+          <ul className="space-y-1.5 text-gray-700 font-medium text-sm">
             {['Best time to visit Japan', 'Top places to see in Kyoto', 'What to eat in Tokyo?', 'Is Tokyo expensive?', 'Packing tips for tropical trips'].map((item, i) => (
               <li 
                 key={i} 
                 onClick={() => { handleSendMessage(item); }}
-                className="flex items-center gap-2.5 hover:text-purple-600 cursor-pointer group p-1.5 rounded-xl hover:bg-white/60 transition-colors"
+                className="flex items-center gap-3 hover:text-[#5538EE] cursor-pointer group p-2 rounded-xl hover:bg-white transition-all shadow-2xs/0 hover:shadow-2xs"
               >
-                <Sparkles size={14} className="text-purple-300 group-hover:text-purple-500 transition-colors shrink-0" />
+                <Sparkles size={16} className="text-purple-400 group-hover:text-purple-600 group-hover:scale-110 transition-all shrink-0" />
                 <span className="line-clamp-1">{item}</span>
               </li>
             ))}

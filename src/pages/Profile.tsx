@@ -5,8 +5,7 @@ import {
   User, Settings, LogOut, MapPin, Heart, Globe, ChevronDown, Trash2, ArrowRight, Sparkles, Calendar, Compass
 } from 'lucide-react';
 import { pageTransition, fadeInUp, staggerContainer } from '../lib/motion';
-import { destinations } from '../data/destinations';
-import { destinationImages } from './Destination';
+import { destinations, destinationImages } from '../data/destinations';
 import { useAuth } from '../contexts/AuthContext';
 import { removeDestinationFromDb, removeTripFromDb } from '../lib/db';
 import toast from 'react-hot-toast';

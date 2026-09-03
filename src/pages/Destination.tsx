@@ -6,9 +6,9 @@ import {
   Calendar, Users, Maximize, Map as MapIcon, ChevronRight,
   CheckCircle2, Lightbulb, Sparkles, Navigation
 } from 'lucide-react';
-import { destinations } from '../data/destinations';
-import ErrorFallback from '../components/ui/ErrorFallback';
+import { destinations, destinationImages } from '../data/destinations';
 import Button from '../components/ui/Button';
+import ErrorFallback from '../components/ui/ErrorFallback';
 import ItineraryTimeline from '../components/features/ItineraryTimeline';
 import { generateItinerary } from '../services/ai';
 import { pageTransition } from '../lib/motion';
@@ -26,24 +26,6 @@ const getFlagEmoji = (country: string) => {
     'Canada': '🇨🇦', 'New Zealand': '🇳🇿', 'Singapore': '🇸🇬'
   };
   return flags[country] || '🌍';
-};
-
-export const destinationImages: Record<string, string> = {
-  'tokyo': 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=2560&auto=format&fit=crop',
-  'paris': 'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?q=80&w=2560&auto=format&fit=crop',
-  'bali': 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?q=80&w=2560&auto=format&fit=crop',
-  'cape-town': 'https://images.unsplash.com/photo-1580060839134-75a5edca2e99?q=80&w=2560&auto=format&fit=crop',
-  'new-york': 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=2560&auto=format&fit=crop',
-  'sydney': 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?q=80&w=2560&auto=format&fit=crop',
-  'kyoto': 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=2560&auto=format&fit=crop',
-  'dubai': 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=2560&auto=format&fit=crop',
-  'london': 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?q=80&w=2560&auto=format&fit=crop',
-  'rome': 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?q=80&w=2560&auto=format&fit=crop',
-  'barcelona': 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?q=80&w=2560&auto=format&fit=crop',
-  'istanbul': 'https://images.unsplash.com/photo-1518684079-3c830dcef090?q=80&w=2560&auto=format&fit=crop',
-  'vancouver': 'https://images.unsplash.com/photo-1559511260-66a654ae982a?q=80&w=2560&auto=format&fit=crop',
-  'queenstown': 'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?q=80&w=2560&auto=format&fit=crop',
-  'singapore': 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?q=80&w=2560&auto=format&fit=crop',
 };
 
 // Local component for the mockup-style place cards
@@ -203,11 +185,24 @@ export default function Destination() {
                   {isSaved ? 'Saved to favorites' : 'Add to favorites'}
                 </button>
                 <button 
-                  onClick={() => {
-                    navigator.clipboard.writeText(window.location.href);
+                  onClick={async () => {
+                    const shareUrl = `https://travora-ai.netlify.app/destination/${dest.id}`;
+                    if (navigator.share) {
+                      try {
+                        await navigator.share({
+                          title: `Explore ${dest.name}, ${dest.country} - Travora`,
+                          text: `Check out ${dest.name} on Travora!`,
+                          url: shareUrl,
+                        });
+                        return;
+                      } catch {
+                        // fallback to clipboard if share was dismissed/cancelled
+                      }
+                    }
+                    await navigator.clipboard.writeText(shareUrl);
                     toast.success('Link copied to clipboard!');
                   }}
-                  className="flex-1 sm:flex-none bg-black/30 backdrop-blur-md border border-white/30 text-white px-5 py-3 md:px-6 md:py-3 rounded-full text-sm md:text-base font-medium flex items-center justify-center gap-2 hover:bg-black/50 transition-colors"
+                  className="flex-1 sm:flex-none bg-black/30 backdrop-blur-md border border-white/30 text-white px-5 py-3 md:px-6 md:py-3 rounded-full text-sm md:text-base font-medium flex items-center justify-center gap-2 hover:bg-black/50 transition-colors cursor-pointer"
                 >
                   <Share size={18} />
                   Share

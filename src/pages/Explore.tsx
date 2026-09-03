@@ -125,7 +125,7 @@ export default function Explore() {
       exit="exit"
       className="min-h-screen bg-[#FAFAF7] pt-20 md:pt-28 pb-24"
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1920px] px-6 sm:px-8 md:px-10 lg:px-12 xl:px-16 w-full">
         
         {/* Page Header */}
         <div className="mb-6 md:mb-10">
