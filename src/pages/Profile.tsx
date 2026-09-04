@@ -37,7 +37,17 @@ export default function Profile() {
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isCurrencyOpen, setIsCurrencyOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState(getInitialLanguage());
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {}
+  });
   const navigate = useNavigate();
+
+  const openConfirm = (title: string, message: string, onConfirm: () => void) => {
+    setConfirmModal({ isOpen: true, title, message, onConfirm });
+  };
 
   const savedDestinationsList = destinations.filter(d => 
     userData?.savedDestinations?.includes(d.id)
@@ -74,32 +84,45 @@ export default function Profile() {
     }
   };
 
-  const handleRemoveFavorite = async (destId: string, e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!user) return;
-    try {
-      await removeDestinationFromDb(user.uid, destId);
-      await refreshUserData();
-      toast.success('Removed from favorites');
-    } catch (err) {
-      console.error(err);
-      toast.error('Failed to remove from favorites');
-    }
+  const handleLogoutClick = () => {
+    openConfirm('Sign Out', 'Are you sure you want to sign out?', () => {
+      logout();
+      setConfirmModal(prev => ({ ...prev, isOpen: false }));
+    });
   };
 
-  const handleDeleteTrip = async (tripId: string, e: React.MouseEvent) => {
+  const handleRemoveFavoriteClick = (destId: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!user) return;
-    try {
-      await removeTripFromDb(user.uid, tripId);
-      await refreshUserData();
-      toast.success('Trip deleted');
-    } catch (err) {
-      console.error(err);
-      toast.error('Failed to delete trip');
-    }
+    openConfirm('Remove Favorite', 'Are you sure you want to remove this destination from your favorites?', async () => {
+      if (!user) return;
+      try {
+        await removeDestinationFromDb(user.uid, destId);
+        await refreshUserData();
+        toast.success('Removed from favorites');
+      } catch (err) {
+        console.error(err);
+        toast.error('Failed to remove from favorites');
+      }
+      setConfirmModal(prev => ({ ...prev, isOpen: false }));
+    });
+  };
+
+  const handleDeleteTripClick = (tripId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    openConfirm('Delete Trip', 'Are you sure you want to delete this planned trip? This action cannot be undone.', async () => {
+      if (!user) return;
+      try {
+        await removeTripFromDb(user.uid, tripId);
+        await refreshUserData();
+        toast.success('Trip deleted');
+      } catch (err) {
+        console.error(err);
+        toast.error('Failed to delete trip');
+      }
+      setConfirmModal(prev => ({ ...prev, isOpen: false }));
+    });
   };
 
   return (
@@ -163,7 +186,7 @@ export default function Profile() {
                     </p>
                     
                     <button 
-                      onClick={logout} 
+                      onClick={handleLogoutClick} 
                       className="mt-2.5 md:mt-0 inline-flex md:w-full items-center justify-center gap-1.5 px-3.5 py-1.5 md:py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200/80 rounded-xl text-xs md:text-sm font-semibold transition-colors cursor-pointer shadow-2xs"
                     >
                       <LogOut size={13} className="md:w-4 md:h-4 text-rose-500" />
@@ -288,7 +311,7 @@ export default function Profile() {
                               <div className="flex items-center justify-between gap-1">
                                 <h4 className="font-bold text-gray-900 text-xs sm:text-sm md:text-base truncate leading-snug">{dest.name}</h4>
                                 <button
-                                  onClick={(e) => handleRemoveFavorite(dest.id, e)}
+                                  onClick={(e) => handleRemoveFavoriteClick(dest.id, e)}
                                   className="p-1 text-gray-400 hover:text-red-500 transition-colors rounded-full hover:bg-white shrink-0 cursor-pointer"
                                   title="Remove from favorites"
                                 >
@@ -361,7 +384,7 @@ export default function Profile() {
                             View Itinerary <ArrowRight size={11} />
                           </button>
                           <button
-                            onClick={(e) => handleDeleteTrip(trip.id, e)}
+                            onClick={(e) => handleDeleteTripClick(trip.id, e)}
                             className="p-1.5 text-gray-400 hover:text-red-500 rounded-lg sm:rounded-xl hover:bg-white transition-colors cursor-pointer shrink-0"
                             title="Delete trip"
                           >
@@ -481,6 +504,37 @@ export default function Profile() {
           </div>
         </motion.div>
       </div>
+
+      {/* Confirmation Modal */}
+      <AnimatePresence>
+        {confirmModal.isOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl border border-gray-100"
+            >
+              <h3 className="text-lg font-bold text-gray-900 mb-2">{confirmModal.title}</h3>
+              <p className="text-sm text-gray-500 mb-6">{confirmModal.message}</p>
+              <div className="flex items-center justify-end gap-3">
+                <button 
+                  onClick={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+                  className="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={confirmModal.onConfirm}
+                  className="px-4 py-2 text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-xl transition-colors cursor-pointer"
+                >
+                  Confirm
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </motion.main>
   );
 }

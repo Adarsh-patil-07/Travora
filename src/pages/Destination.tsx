@@ -133,7 +133,7 @@ export default function Destination() {
                 <span className="text-white font-semibold truncate">{dest.name}</span>
               </div>
 
-              <h1 className="font-instrument-serif text-white text-5xl sm:text-6xl md:text-7xl lg:text-[7rem] leading-none mb-3 md:mb-4 tracking-tight">
+              <h1 className="font-instrument-serif text-white text-5xl sm:text-6xl md:text-7xl lg:text-[7rem] leading-none mb-3 md:mb-4 tracking-wide">
                 {dest.name}
               </h1>
               
@@ -145,6 +145,22 @@ export default function Destination() {
               <p className="text-white/90 text-base sm:text-lg md:text-xl font-light max-w-md mb-6 md:mb-8 leading-relaxed">
                 {dest.description}
               </p>
+
+              {/* Mobile Weather (Hidden on Desktop) */}
+              <div className="lg:hidden mb-6 flex flex-wrap items-center gap-2.5 sm:gap-3 text-white animate-fade-in">
+                <div className="text-3xl sm:text-4xl drop-shadow-md leading-none">{weather?.icon || '🌤️'}</div>
+                <div className="flex items-center gap-2 border-r border-white/20 pr-2.5 sm:pr-3">
+                  <span className="text-2xl sm:text-3xl font-light tracking-wide leading-none">{weather?.temp ?? 26}°C</span>
+                  <span className="text-[13px] sm:text-sm font-medium text-white/90">{weather?.condition || 'Sunny'}</span>
+                </div>
+                <div className="text-[11px] sm:text-xs text-white/80 flex items-center gap-1 font-medium tracking-wide">
+                  <MapPin size={10} className="sm:w-3 sm:h-3" /> {dest.name}
+                </div>
+                <div className="flex items-center gap-1 text-emerald-400 text-[10px] sm:text-[11px] font-bold tracking-widest ml-1">
+                  <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.9)]"></span> 
+                  LIVE
+                </div>
+              </div>
 
               <div className="flex flex-wrap items-center gap-3 md:gap-4 w-full sm:w-auto">
                 <button 
@@ -162,11 +178,11 @@ export default function Destination() {
                     }
                     await refreshUserData();
                   }}
-                  className={`flex-1 sm:flex-none px-5 py-3 md:px-6 md:py-3 rounded-full text-sm md:text-base font-medium flex items-center justify-center gap-2 transition-colors ${
-                    isSaved ? 'bg-accent text-white hover:bg-accent/90' : 'bg-white text-gray-900 hover:bg-gray-100'
+                  className={`flex-1 sm:flex-none px-4 py-2.5 md:px-5 md:py-2.5 rounded-full text-sm font-semibold flex items-center justify-center gap-2 whitespace-nowrap transition-all shadow-sm ${
+                    isSaved ? 'bg-accent/30 backdrop-blur-md border border-accent/20 text-white hover:bg-accent/40' : 'bg-white/30 backdrop-blur-md border border-white/20 text-white hover:bg-white/40'
                   }`}
                 >
-                  <Heart size={18} className={isSaved ? 'fill-white' : ''} />
+                  <Heart size={16} className={isSaved ? 'fill-white' : ''} />
                   {isSaved ? 'Saved to favorites' : 'Add to favorites'}
                 </button>
                 <button 
@@ -175,8 +191,6 @@ export default function Destination() {
                     if (navigator.share) {
                       try {
                         await navigator.share({
-                          title: `Explore ${dest.name}, ${dest.country} - Travora`,
-                          text: `Check out ${dest.name} on Travora!`,
                           url: shareUrl,
                         });
                         return;
@@ -187,12 +201,13 @@ export default function Destination() {
                     await navigator.clipboard.writeText(shareUrl);
                     toast.success('Link copied to clipboard!');
                   }}
-                  className="flex-1 sm:flex-none bg-black/30 backdrop-blur-md border border-white/30 text-white px-5 py-3 md:px-6 md:py-3 rounded-full text-sm md:text-base font-medium flex items-center justify-center gap-2 hover:bg-black/50 transition-colors cursor-pointer"
+                  className="flex-1 sm:flex-none bg-black/30 backdrop-blur-md border border-white/20 text-white px-4 py-2.5 md:px-5 md:py-2.5 rounded-full text-sm font-semibold flex items-center justify-center gap-2 hover:bg-black/50 transition-all shadow-sm cursor-pointer whitespace-nowrap"
                 >
-                  <Share size={18} />
+                  <Share size={16} />
                   Share
                 </button>
               </div>
+
             </div>
 
             {/* Hero Right Content - Weather */}
@@ -261,8 +276,8 @@ export default function Destination() {
 
       {/* 2. STICKY TABS */}
       <div className="bg-white rounded-t-3xl -mt-6 relative z-20 shadow-sm border-b border-gray-100 sticky top-[72px] lg:top-[76px]">
-        <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-12 xl:px-16">
-          <ul className="flex gap-8 overflow-x-auto text-base font-semibold text-gray-500 py-4 pb-3">
+        <div className="max-w-[1920px] mx-auto relative px-4 sm:px-6 lg:px-12 xl:px-16">
+          <ul className="flex gap-5 md:gap-8 overflow-x-auto no-scrollbar text-sm md:text-base font-semibold text-gray-500 py-4 pb-3 pr-8">
             <li onClick={() => window.document.getElementById('overview')?.scrollIntoView({ behavior: 'smooth', block: 'start' })} className="hover:text-gray-900 transition-colors whitespace-nowrap cursor-pointer">Overview</li>
             <li onClick={() => window.document.getElementById('places')?.scrollIntoView({ behavior: 'smooth', block: 'start' })} className="hover:text-gray-900 transition-colors whitespace-nowrap cursor-pointer">Places to visit</li>
             <li onClick={() => window.document.getElementById('things')?.scrollIntoView({ behavior: 'smooth', block: 'start' })} className="hover:text-gray-900 transition-colors whitespace-nowrap cursor-pointer">Things to do</li>
@@ -271,6 +286,8 @@ export default function Destination() {
             <li onClick={() => window.document.getElementById('tips')?.scrollIntoView({ behavior: 'smooth', block: 'start' })} className="hover:text-gray-900 transition-colors whitespace-nowrap cursor-pointer">Travel tips</li>
             <li onClick={() => window.document.getElementById('itinerary')?.scrollIntoView({ behavior: 'smooth', block: 'start' })} className="hover:text-gray-900 transition-colors whitespace-nowrap cursor-pointer">Itinerary</li>
           </ul>
+          {/* Subtle scroll hint gradient on mobile/tablet to guide user */}
+          <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white via-white/80 to-transparent pointer-events-none lg:hidden rounded-tr-3xl" />
         </div>
       </div>
 
@@ -280,21 +297,23 @@ export default function Destination() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch">
           {/* About */}
           <div id="overview" className="scroll-mt-32 lg:col-span-7 xl:col-span-8 flex flex-col h-full">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 font-instrument-serif tracking-tight">About {dest.name}</h2>
-            <p className="text-gray-600 text-lg leading-relaxed mb-6">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 font-instrument-serif tracking-wide">About {dest.name}</h2>
+            <p className="text-gray-600 text-lg leading-relaxed mb-6 text-justify">
               {dest.description} {dest.name}'s bustling capital fuses cutting-edge technology with deep-rooted traditions. From neon-lit skyscrapers and world-class shopping to serene temples and exquisite cuisine, {dest.name} offers an unforgettable experience.
             </p>
-            <p className="text-gray-600 text-lg leading-relaxed mb-8">
+            <p className="text-gray-600 text-lg leading-relaxed mb-8 text-justify">
               Whether you're exploring the historic districts, tasting local delicacies at vibrant street markets, or enjoying the lively nightlife, every moment spent here is packed with unique discoveries. Discover the true essence of {dest.country} as you immerse yourself in the rich local culture.
             </p>
             
-            <div className="flex flex-wrap items-center gap-2 lg:gap-3 mb-8 mt-auto pt-4">
-              <span className="text-xs lg:text-sm font-bold uppercase tracking-widest text-gray-400 mr-2 lg:mr-4">Known For:</span>
-              {['Rich Culture', 'Local Cuisine', 'Historic Sites', 'Vibrant Nightlife', 'Scenic Views'].map((tag, i) => (
-                <span key={i} className="px-4 py-1.5 lg:px-5 lg:py-2 bg-gray-50 border border-gray-100 rounded-full text-sm font-semibold text-gray-700 hover:border-gray-200 hover:bg-gray-100 transition-colors cursor-default shadow-sm">
-                  {tag}
-                </span>
-              ))}
+            <div className="flex flex-col gap-3 mb-8 mt-auto pt-4">
+              <span className="text-xs font-bold uppercase tracking-widest text-gray-400">Known For:</span>
+              <div className="flex flex-wrap gap-2 lg:gap-3">
+                {['Rich Culture', 'Local Cuisine', 'Historic Sites', 'Vibrant Nightlife', 'Scenic Views'].map((tag, i) => (
+                  <span key={i} className="px-4 py-1.5 lg:px-5 lg:py-2 bg-gray-50 border border-gray-100 rounded-full text-sm font-semibold text-gray-700 hover:border-gray-200 hover:bg-gray-100 transition-colors cursor-default shadow-sm">
+                    {tag}
+                  </span>
+                ))}
+              </div>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 lg:gap-8 bg-white p-6 lg:p-8 rounded-3xl border border-gray-100 shadow-sm">
@@ -336,10 +355,10 @@ export default function Destination() {
         {/* 4. PLACES TO VISIT */}
         <div id="places" className="scroll-mt-32">
           <div className="mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 font-instrument-serif tracking-tight">Places to visit</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 font-instrument-serif tracking-wide">Places to visit</h2>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 pb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {dest.famousPlaces.map((place, i) => (
               <MockupPlaceCard key={i} place={place} />
             ))}
@@ -350,11 +369,8 @@ export default function Destination() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Things to do */}
           <div id="things" className="md:col-span-1 scroll-mt-32">
-            <div className="flex justify-between items-end mb-6">
+            <div className="mb-6">
               <h2 className="text-2xl font-bold text-gray-900">Things to do</h2>
-              <button className="text-blue-600 font-medium text-sm flex items-center gap-1 hover:text-blue-700">
-                View all <ChevronRight size={16} />
-              </button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 gap-4">
               <div className="bg-white border border-gray-100 p-4 rounded-2xl flex gap-4 shadow-sm">

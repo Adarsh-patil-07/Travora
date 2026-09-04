@@ -1,8 +1,8 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { HelmetProvider } from 'react-helmet-async';
-import { Toaster } from 'react-hot-toast';
+import { Toaster, useToasterStore, toast } from 'react-hot-toast';
 
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
@@ -11,6 +11,21 @@ import ScrollToTop from './components/layout/ScrollToTop';
 import ChatAssistant from './components/features/ChatAssistant';
 import { AuthProvider } from './contexts/AuthContext';
 import { CurrencyProvider } from './contexts/CurrencyContext';
+
+// Limit maximum toasts to prevent multiple popups
+function ToastLimiter() {
+  const { toasts } = useToasterStore();
+  const TOAST_LIMIT = 1;
+
+  useEffect(() => {
+    toasts
+      .filter((t) => t.visible) // Only consider visible toasts
+      .filter((_, i) => i >= TOAST_LIMIT) // Isolate toasts after the limit
+      .forEach((t) => toast.dismiss(t.id)); // Dismiss them
+  }, [toasts]);
+
+  return null;
+}
 
 // Route-level Code Splitting for optimal initial page load speed
 const Home = lazy(() => import('./pages/Home'));
@@ -73,20 +88,21 @@ function MainLayout() {
       {location.pathname === '/' && <Footer />}
       {!isAssistant && <ChatAssistant />}
       <MobileBottomNav />
+      <ToastLimiter />
       <Toaster 
         position="bottom-center"
         toastOptions={{
           style: {
-            background: 'linear-gradient(135deg, rgba(27, 20, 60, 0.95) 0%, rgba(44, 28, 98, 0.92) 100%)',
-            color: '#FAFAF7',
-            border: '1px solid rgba(140, 101, 247, 0.35)',
+            background: 'rgba(255, 255, 255, 0.95)',
+            color: '#111111',
+            border: '1px solid rgba(0, 0, 0, 0.05)',
             backdropFilter: 'blur(16px)',
             WebkitBackdropFilter: 'blur(16px)',
             borderRadius: '9999px',
             fontSize: '13.5px',
             fontWeight: '600',
             padding: '10px 22px',
-            boxShadow: '0 16px 36px -4px rgba(85, 56, 238, 0.35), 0 6px 16px -2px rgba(0, 0, 0, 0.3)',
+            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05)',
             marginBottom: '84px',
             letterSpacing: '0.01em',
           },

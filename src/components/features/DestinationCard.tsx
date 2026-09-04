@@ -1,9 +1,12 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Star, MapPin, ArrowUpRight } from 'lucide-react';
+import { MapPin, Heart } from 'lucide-react';
 import type { Destination } from '../../types';
 import { cardHover } from '../../lib/motion';
 import { useTravelImage } from '../../hooks/useTravelImage';
+import { useAuth } from '../../contexts/AuthContext';
+import { saveDestinationToDb, removeDestinationFromDb } from '../../lib/db';
+import toast from 'react-hot-toast';
 
 interface DestinationCardProps {
   destination: Destination;
@@ -11,10 +14,28 @@ interface DestinationCardProps {
 
 export default function DestinationCard({ destination }: DestinationCardProps) {
   const { imageUrl } = useTravelImage(destination.imageQuery || `${destination.name} ${destination.country}`, destination.id, undefined, 'small');
+  const { user, userData, refreshUserData } = useAuth();
+  
+  const isSaved = userData?.savedDestinations.includes(destination.id) || false;
 
-  // Static mock ratings based on destination ID hash
-  const hash = destination.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  const rating = (4.6 + (hash % 4) * 0.1).toFixed(1);
+  const handleFavoriteClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!user) {
+      toast.error('Please sign in to save destinations.');
+      return;
+    }
+
+    if (isSaved) {
+      await removeDestinationFromDb(user.uid, destination.id);
+      toast.success('Removed from favorites');
+    } else {
+      await saveDestinationToDb(user.uid, destination.id);
+      toast.success('Added to favorites!');
+    }
+    await refreshUserData();
+  };
 
   return (
     <Link to={`/destination/${destination.id}`} className="block h-full w-full group">
@@ -40,14 +61,16 @@ export default function DestinationCard({ destination }: DestinationCardProps) {
             {destination.tags[0] || 'Explore'}
           </span>
           
-          <div className="flex items-center gap-1 bg-white/15 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/25 text-white shadow-xs">
-            <Star size={11} className="fill-amber-400 text-amber-400" />
-            <span className="text-[10px] sm:text-[11px] font-bold">{rating}</span>
+          <div 
+            onClick={handleFavoriteClick}
+            className="flex items-center justify-center bg-white/15 backdrop-blur-md w-7 h-7 rounded-full border border-white/25 text-white shadow-xs cursor-pointer pointer-events-auto hover:bg-white/30 transition-colors"
+          >
+            <Heart size={14} className={isSaved ? 'fill-accent text-accent' : 'text-white'} />
           </div>
         </div>
 
         {/* Bottom Destination Info */}
-        <div className="absolute bottom-0 inset-x-0 p-4 sm:p-5 text-white flex items-end justify-between">
+        <div className="absolute bottom-0 inset-x-0 p-4 sm:p-5 text-white flex items-end justify-between pointer-events-none">
           <div className="min-w-0 pr-2">
             <h3 className="text-lg sm:text-xl font-bold tracking-tight text-white mb-0.5 truncate leading-tight group-hover:text-amber-200 transition-colors">
               {destination.name}
@@ -57,10 +80,6 @@ export default function DestinationCard({ destination }: DestinationCardProps) {
             </p>
           </div>
 
-          {/* Hover Arrow Action */}
-          <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white shrink-0 group-hover:bg-white group-hover:text-gray-900 group-hover:scale-105 transition-all duration-300 shadow-sm">
-            <ArrowUpRight size={15} />
-          </div>
         </div>
       </motion.div>
     </Link>
