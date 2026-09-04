@@ -3,12 +3,12 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyB-li0ryuqUjFQ1IbJwdjvBA8rthUtYstk",
-  authDomain: "travora-ai.firebaseapp.com",
-  projectId: "travora-ai",
-  storageBucket: "travora-ai.firebasestorage.app",
-  messagingSenderId: "954459538029",
-  appId: "1:954459538029:web:e895dd327a5e307ca0f564"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
 const app = initializeApp(firebaseConfig);
