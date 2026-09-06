@@ -154,3 +154,8 @@ body,
     display: none !important;
   }
 }
+
+/* Mobile Touch Optimization */
+button, a, [role="button"] {
+  touch-action: manipulation;
+}
